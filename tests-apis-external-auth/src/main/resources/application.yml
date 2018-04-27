@@ -1,0 +1,3 @@
+server:
+  context-path: /tests-apis-external-auth
+  port: 9090
