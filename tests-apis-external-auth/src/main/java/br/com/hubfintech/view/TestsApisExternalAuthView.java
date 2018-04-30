@@ -5,6 +5,9 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.context.FacesContext;
 
 import org.primefaces.model.UploadedFile;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import br.com.hubfintech.testsapisauthexternal.service.ITestApisAuthExternalService;
 
 @ManagedBean(name = "testsApisView")
 public class TestsApisExternalAuthView {
@@ -13,8 +16,13 @@ public class TestsApisExternalAuthView {
 
 	/*@Autowired
 	private ExternalAuthorizationService authorizationService;*/
+	
+	@Autowired
+	private ITestApisAuthExternalService apisAuthExternalService;
 
 	public void upload() {
+		apisAuthExternalService.authentication();
+		
 		if (file != null) {
 			FacesMessage message = new FacesMessage("Succesful", file.getFileName() + " is uploaded.");
 			FacesContext.getCurrentInstance().addMessage(null, message);
