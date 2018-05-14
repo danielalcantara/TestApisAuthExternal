@@ -1,4 +1,4 @@
-package br.com.hubfintech.view;
+package br.com.hubfintech.testsapisauthext.view;
 
 import javax.faces.bean.ManagedBean;
 

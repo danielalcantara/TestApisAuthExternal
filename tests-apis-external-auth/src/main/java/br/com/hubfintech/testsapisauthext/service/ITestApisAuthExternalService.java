@@ -1,4 +1,4 @@
-package br.com.hubfintech.testsapisauthexternal.service;
+package br.com.hubfintech.testsapisauthext.service;
 
 public interface ITestApisAuthExternalService {
 

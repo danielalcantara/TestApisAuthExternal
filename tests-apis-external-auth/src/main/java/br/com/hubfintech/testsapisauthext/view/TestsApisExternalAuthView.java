@@ -1,4 +1,4 @@
-package br.com.hubfintech.view;
+package br.com.hubfintech.testsapisauthext.view;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -7,7 +7,7 @@ import javax.faces.context.FacesContext;
 import org.primefaces.model.UploadedFile;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import br.com.hubfintech.testsapisauthexternal.service.ITestApisAuthExternalService;
+import br.com.hubfintech.testsapisauthext.service.ITestApisAuthExternalService;
 
 @ManagedBean(name = "testsApisView")
 public class TestsApisExternalAuthView {
