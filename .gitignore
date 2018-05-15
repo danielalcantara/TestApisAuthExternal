@@ -1,2 +1,6 @@
 
 test-apis-auth-external/\.metadata/src/main/webapp/WEB-INF/faces-config\.pageflow
+
+external-auth-test/\.project
+
+external-auth-test/\.settings/
