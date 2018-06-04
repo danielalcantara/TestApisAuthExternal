@@ -11,7 +11,7 @@ import javax.inject.Inject;
 import org.primefaces.model.UploadedFile;
 import org.springframework.stereotype.Controller;
 
-import br.com.hubfintech.extauthtests.service.IExtAuthorizationService;
+import br.com.hubfintech.extauthtests.service.IExtAuthorizationTestService;
 
 @Controller
 public class TestsExtAuthBean implements Serializable {
@@ -22,7 +22,7 @@ public class TestsExtAuthBean implements Serializable {
 	private String url;
 
 	@Inject
-	IExtAuthorizationService authorizationService;
+	IExtAuthorizationTestService authorizationTestService;
 
 	/*
 	 * @Autowired private ExternalAuthorizationService authorizationService;
@@ -31,11 +31,12 @@ public class TestsExtAuthBean implements Serializable {
 	public void upload() {
 
 		if (file != null) {
-			authorizationService.authorization();
 			FacesMessage message = new FacesMessage("Succesful", file.getFileName() + " is uploaded.");
 			FacesContext.getCurrentInstance().addMessage(null, message);
+			
 			// Message messageAuth = new Message();
 			try {
+				authorizationTestService.executeTests(new String(file.getContents()));
 				// authorizationService.sendMessage(messageAuth);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -61,10 +62,10 @@ public class TestsExtAuthBean implements Serializable {
 	}
 
 	public void validaArquivo(FacesContext context, UIComponent component, Object object) throws ValidatorException {
-		FacesMessage message = new FacesMessage("Arquivo é necessário!");
+		/*FacesMessage message = new FacesMessage("Arquivo é necessário!");
 		FacesContext.getCurrentInstance().addMessage(component.getId(), message);
 
-		message.setSeverity(FacesMessage.SEVERITY_ERROR);
+		message.setSeverity(FacesMessage.SEVERITY_ERROR);*/
 
 		//throw new ValidatorException(message);
 	}
