@@ -223,5 +223,36 @@
       "AUTHORIZATION_ADVICE",
       "CARDHOLDER_PRESENT"
     ]
+  },
+  {
+    "index_request": "12",
+    "action": "authorization",
+    "code_expected": "authorization",
+    "status_expected": 200,
+    "type": "regular",
+    "account_id": "42d8c89ea8cfa02454c8539d46639c16cff2ce7d17e16c86f8a2c9e2e6901d35",
+    "amount": 32.89,
+    "currency_id": "986",
+    "original_currency_id": "986",
+    "stan": "1111",
+    "trunc_card_number": "555544******9876",
+    "date_time": "2016-11-11T11:11:11.455-04:00",
+    "acquirer_code": "999",
+    "commerce": {
+      "code": "12",
+      "name": "Taxi premium",
+      "mcc": "10",
+      "postal_code": "654345678"
+    },
+    "fees": [
+      {
+        "code": "atm_withdraw",
+        "amount": 2
+      }
+    ],
+    "tags": [
+      "AUTHORIZATION_ADVICE",
+      "CARDHOLDER_PRESENT"
+    ]
   }
 ]
