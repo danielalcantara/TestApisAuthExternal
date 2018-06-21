@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faces-config version="2.2"
+	xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd">
+
+
+	<application>
+		<el-resolver>org.springframework.web.jsf.el.SpringBeanFacesELResolver</el-resolver>
+		<locale-config>
+			<default-locale>pt_BR</default-locale>
+			<supported-locale>en_US</supported-locale>
+			<supported-locale>pt_BR</supported-locale>
+		</locale-config>
+
+		<resource-bundle>
+			<base-name>br.com.hubfintech.extauthtests.bean.ResourceBundleBean</base-name>
+			<var>msg</var>
+		</resource-bundle>
+	</application>
+
+	<lifecycle>
+		<phase-listener>br.com.hubfintech.extauthtests.listener.AutorizadorListener</phase-listener>
+		<phase-listener>br.com.hubfintech.extauthtests.listener.LogPhaseListener</phase-listener>
+	</lifecycle>
+
+	<render-kit>
+		<renderer>
+			<component-family>javax.faces.Output</component-family>
+			<renderer-type>javax.faces.Text</renderer-type>
+			<renderer-class>br.com.hubfintech.extauthtests.renderer.HtmlCustomRenderer</renderer-class>
+		</renderer>
+	</render-kit>
+
+</faces-config>

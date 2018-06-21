@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core">
+
+<h:head>
+
+</h:head>
+
+<f:view locale="#{localeBean.locale}">
+
+	<h:body>
+		<h:form id="formDetalhesTeste">
+			<p:panelGrid style="width:100%" id="detalhesTeste">
+				<f:facet name="header">
+					<p:row>
+						<p:column colspan="2">
+							<h:outputText value="Action: " />
+							<h:outputText
+								value="#{testsExtAuthBean.testSelected.actionUpperCase}"
+								converter="strnacon" />
+						</p:column>
+					</p:row>
+				</f:facet>
+
+				<p:row>
+					<p:column colspan="2">
+						<h:outputText value="Account Id: " />
+						<h:outputText value="#{testsExtAuthBean.testSelected.accountId}"
+							converter="strnacon" />
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column style="width: 50%;">
+						<h:outputText value="Truncated Card Number: " />
+						<h:outputText
+							value="#{testsExtAuthBean.testSelected.truncCardNumber}"
+							converter="strnacon" />
+					</p:column>
+					<p:column>
+						<h:outputText value="Commerce Name: " />
+						<h:outputText
+							value="#{testsExtAuthBean.testSelected.commerceName}"
+							converter="strnacon" />
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column>
+						<h:outputText value="Amount: " />
+						<h:outputText value="#{testsExtAuthBean.testSelected.amount}"
+							converter="strnacon" />
+					</p:column>
+					<p:column>
+						<h:outputText value="Response Code: " />
+						<h:outputText
+							value="#{testsExtAuthBean.testSelected.responseCode}"
+							converter="strnacon" />
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column>
+						<h:outputText value="Code Expected: " />
+						<h:outputText
+							value="#{testsExtAuthBean.testSelected.codeExpected}"
+							converter="strnacon" />
+					</p:column>
+					<p:column>
+						<h:outputText value="Code Returned: " />
+						<h:outputText
+							value="#{testsExtAuthBean.testSelected.codeReturned}"
+							converter="strnacon" />
+					</p:column>
+				</p:row>
+				
+				<p:row>
+					<p:column>
+						<h:outputText value="Status: " />
+						<h:outputText
+							value="#{testsExtAuthBean.testSelected.status}"
+							converter="strnacon" />
+					</p:column>
+					<p:column>
+						<h:outputText value="Type: " />
+						<h:outputText
+							value="#{testsExtAuthBean.testSelected.type}"
+							converter="strnacon" />
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column styleClass="ui-widget-header">
+						<h:outputText value="Request" />
+					</p:column>
+					<p:column styleClass="ui-widget-header">
+						<h:outputText value="Response" />
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column width="50%">
+						<p:textEditor value="#{testsExtAuthBean.testSelected.requestJson}" style="background-color:#ffffff; color:#000000"
+							 height="600"  toolbarVisible="false" converter="strlntopcon" />
+					</p:column>
+					<p:column width="50%">
+						<p:textEditor value="#{testsExtAuthBean.testSelected.responseJson}" style="background-color:#ffffff; color:#000000"
+							 height="600"  toolbarVisible="false" converter="strlntopcon" />
+					</p:column>
+				</p:row>
+
+				<p:row>
+					<p:column style="text-align:right" colspan="2">
+						<p:commandButton value="Atualizar"
+								oncomplete="PF('dlg1').hide();" update="@all :growl"
+								actionListener="#{testsExtAuthBean.testUpdate}"
+								disabled="#{testsExtAuthBean.tests == null ? 'true' : 'false'}"
+								icon="fa fa-refresh" />
+					</p:column>
+				</p:row>
+
+			</p:panelGrid>
+
+		</h:form>
+	</h:body>
+
+</f:view>
+
+</html>

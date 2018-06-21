@@ -1,0 +1,227 @@
+[
+  {
+    "index_request": "1",
+    "action": "authorization",
+    "code_expected": "approved",
+    "status_expected": 200,
+    "type": "regular",
+    "account_id": "87d8003515b90ce41e2e59f489771d09ae29a78be2b20b1c92fd498369735611",
+    "amount": 1.89,
+    "currency_id": "986",
+    "original_currency_id": "986",
+    "stan": "1111",
+    "trunc_card_number": "555544******9876",
+    "date_time": "2016-11-11T11:11:11.455-04:00",
+    "acquirer_code": "999",
+    "commerce": {
+      "code": "12",
+      "name": "Taxi premium",
+      "mcc": "10",
+      "postal_code": "654345678"
+    },
+    "fees": [
+      {
+        "code": "atm_withdraw",
+        "amount": 2
+      }
+    ],
+    "tags": [
+      "AUTHORIZATION_ADVICE",
+      "CARDHOLDER_PRESENT"
+    ]
+  },
+  {
+    "index_request": "2",
+    "action": "withdraw",
+    "code_expected": "approved",
+    "status_expected": 200,
+    "type": "atm",
+    "account_id": "87d8003515b90ce41e2e59f489771d09ae29a78be2b20b1c92fd498369735611",
+    "amount": 100,
+    "currency_id": "986",
+    "original_currency_id": "986",
+    "stan": "1111",
+    "trunc_card_number": "555544******9876",
+    "date_time": "2016-11-11T11:11:11.455-04:00",
+    "acquirer_code": "999",
+    "commerce": {
+      "code": "12",
+      "name": "Taxi premium",
+      "mcc": "10",
+      "postal_code": "654345678"
+    },
+    "fees": [
+      {
+        "code": "atm_withdraw",
+        "amount": 2.00
+      }
+    ],
+    "tags": [
+      "AUTHORIZATION_ADVICE",
+      "CARDHOLDER_PRESENT"
+    ]
+  },
+  {
+    "index_request": "3",
+    "action": "fund",
+    "code_expected": "approved",
+    "status_expected": 200,
+    "type": "lottery",
+    "account_id": "87d8003515b90ce41e2e59f489771d09ae29a78be2b20b1c92fd498369735611",
+    "amount": 100,
+    "currency_id": "986",
+    "original_currency_id": "986",
+    "stan": "1111",
+    "trunc_card_number": "555544******9876",
+    "date_time": "2016-11-11T11:11:11.455-04:00",
+    "acquirer_code": "999",
+    "commerce": {
+      "code": "12",
+      "name": "Taxi premium",
+      "mcc": "10",
+      "postal_code": "654345678"
+    },
+    "fees": [
+      {
+        "code": "atm_withdraw",
+        "amount": 2.00
+      }
+    ],
+    "tags": [
+      "AUTHORIZATION_ADVICE",
+      "CARDHOLDER_PRESENT"
+    ]
+  },
+  {
+    "index_request": "4",
+    "index_request_refer": "1",
+    "action": "cancel",
+    "code_expected": "approved",
+    "status_expected": 200,
+    "reason_id": "user_request",
+    "amount": 1.89,
+    "fees": [
+      {
+        "code": "atm_withdraw",
+        "amount": 2
+      }
+    ],
+    "date_time": "2016-01-11T11:11:11.455-04:00"
+  },
+  {
+    "index_request": "5",
+    "action": "balance",
+    "status_expected": 200,
+    "account_id": "87d8003515b90ce41e2e59f489771d09ae29a78be2b20b1c92fd498369735611"
+  },
+  {
+    "index_request": "6",
+    "action": "information",
+    "status_expected": 200,
+    "account_id": "87d8003515b90ce41e2e59f489771d09ae29a78be2b20b1c92fd498369735611"
+  },
+  {
+    "index_request": "7",
+    "index_request_refer": "3",
+    "status_expected": 200,
+    "action": "tracking"
+  },
+  {
+    "index_request": "8",
+    "status_expected": 200,
+    "action": "status"
+  },
+  {
+    "index_request": "9",
+    "action": "authorization",
+    "code_expected": "rejected_precondition_failed",
+    "status_expected": 200,
+    "type": "regular",
+    "account_id": "87d8003515b90ce41e2e59f489771d09ae29a78be2b20b1c92fd498369735611",
+    "amount": 320500.89,
+    "currency_id": "986",
+    "original_currency_id": "986",
+    "stan": "1111",
+    "trunc_card_number": "555544******9876",
+    "date_time": "2016-11-11T11:11:11.455-04:00",
+    "acquirer_code": "999",
+    "commerce": {
+      "code": "12",
+      "name": "Taxi premium",
+      "mcc": "10",
+      "postal_code": "654345678"
+    },
+    "fees": [
+      {
+        "code": "atm_withdraw",
+        "amount": 2
+      }
+    ],
+    "tags": [
+      "AUTHORIZATION_ADVICE",
+      "CARDHOLDER_PRESENT"
+    ]
+  },
+  {
+    "index_request": "10",
+    "action": "authorization",
+    "code_expected": "rejected_blacklist",
+    "status_expected": 200,
+    "type": "regular",
+    "account_id": "42d8c89ea8cfa02454c8539d46639c16cff2ce7d17e16c86f8a2c9e2e6901d35",
+    "amount": 32.89,
+    "currency_id": "986",
+    "original_currency_id": "986",
+    "stan": "1111",
+    "trunc_card_number": "555544******9876",
+    "date_time": "2016-11-11T11:11:11.455-04:00",
+    "acquirer_code": "999",
+    "commerce": {
+      "code": "12",
+      "name": "Taxi premium",
+      "mcc": "10",
+      "postal_code": "654345678"
+    },
+    "fees": [
+      {
+        "code": "atm_withdraw",
+        "amount": 2
+      }
+    ],
+    "tags": [
+      "AUTHORIZATION_ADVICE",
+      "CARDHOLDER_PRESENT"
+    ]
+  },
+  {
+    "index_request": "11",
+    "action": "authorization",
+    "code_expected": "rejected_high_risk",
+    "status_expected": 200,
+    "type": "regular",
+    "account_id": "f7f88255924ae485b4e708b4ab8299e3c4109491a3ccd11c764e983c29b1043f",
+    "amount": 32.89,
+    "currency_id": "986",
+    "original_currency_id": "986",
+    "stan": "1111",
+    "trunc_card_number": "555544******9876",
+    "date_time": "2016-11-11T11:11:11.455-04:00",
+    "acquirer_code": "999",
+    "commerce": {
+      "code": "12",
+      "name": "Taxi premium",
+      "mcc": "10",
+      "postal_code": "654345678"
+    },
+    "fees": [
+      {
+        "code": "atm_withdraw",
+        "amount": 2
+      }
+    ],
+    "tags": [
+      "AUTHORIZATION_ADVICE",
+      "CARDHOLDER_PRESENT"
+    ]
+  }
+]

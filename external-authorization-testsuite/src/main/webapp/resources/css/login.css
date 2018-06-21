@@ -1,0 +1,18 @@
+body {
+	background-color: #121212;
+}
+
+.panelBorderNone.ui-panelgrid>*>tr,
+.panelBorderNone.ui-panelgrid .ui-panelgrid-cell {
+	border: none;
+}
+
+.panelLogin {
+	margin: 130px 0 0 168px;
+	border-color: #121212;
+}
+
+.panelLogin.ui-panelgrid>*>td,
+.panelLogin.ui-panelgrid .ui-panelgrid-cell {
+	background-color: #121211 !important;
+}

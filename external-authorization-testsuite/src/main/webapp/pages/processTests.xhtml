@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+	
+<head>
+
+</head>
+	
+<h:body>
+
+	<ui:composition template="/pages/template/common/commonLayout.xhtml">
+
+		<ui:define name="content">
+		
+			<p:growl id="growl" showDetail="false" life="6000" />
+			
+			<p:dialog modal="true" widgetVar="statusDialog" showHeader="false" draggable="false" closable="false" resizable="false">
+			    <p:graphicImage value="/resources/img/loading.gif" />
+			</p:dialog>
+			
+			<p:panel header="Dados para Bateria de Testes">	
+				<h:form enctype="multipart/form-data">
+					<h:panelGrid columns="3" cellpadding="4">
+						<h:outputText value="#{msg['label.field.url']} é" />
+						<p:inputText id="url-api" value="#{testsExtAuthBean.url}"
+							required="true"
+							requiredMessage="#{msg['msg.field.url.required']}" />
+						<p:message for="url-api"></p:message>
+
+						<h:outputText value="#{msg['label.field.port']}" />
+						<p:inputText id="port-api" value="#{testsExtAuthBean.port}"
+							required="true"
+							requiredMessage="#{msg['msg.field.port.required']}" />
+						<p:message for="port-api"></p:message>
+
+						<h:outputText value="#{msg['label.field.fileDownload']}" />
+						<p:commandButton value="Download Arquivo" ajax="false"
+							immediate="true"
+							onclick="PrimeFaces.monitorDownload(start, stop);"
+							icon="fa fa-fw fa-download">
+
+							<p:fileDownload value="#{testsExtAuthBean.fileModelTests}" />
+
+						</p:commandButton>
+						<h:outputText value="" />
+
+						<h:outputText value="#{msg['label.field.archive']}" />
+						<p:fileUpload value="#{testsExtAuthBean.file}" skinSimple="true"
+							id="file-test" label="Arquivo" mode="simple"
+							validator="#{fileValidatorBean.validateFileJson}" />
+						<p:message for="file-test"></p:message>
+
+						<p:commandButton value="Iniciar Testes" ajax="false"
+							onclick="PF('statusDialog').show();"
+							actionListener="#{testsExtAuthBean.upload}"
+							icon="fa fa-fw fa-upload" />
+
+					</h:panelGrid>
+				</h:form>
+
+				<p:toolbar style="">
+					<f:facet name="right">
+						<h:form>
+							<p:commandButton value="Refazer Testes" ajax="false"
+								onclick="PF('statusDialog').show();" update="@all"
+								actionListener="#{testsExtAuthBean.reloadTests}"
+								disabled="#{testsExtAuthBean.tests == null ? 'true' : 'false'}"
+								icon="fa fa-refresh" />
+
+							<p:commandButton value="Relatório" ajax="false"
+								onclick="PrimeFaces.monitorDownload(start, stop);"
+								disabled="#{testsExtAuthBean.tests == null ? 'true' : 'false'}"
+								icon="fa fa-list-alt">
+
+								<p:fileDownload value="#{testsExtAuthBean.reportTests}" />
+
+							</p:commandButton>
+
+							<p:commandButton value="Limpar Teste" ajax="true"
+								onclick="PrimeFaces.monitorDownload(start, stop);" update="@all"
+								actionListener="#{testsExtAuthBean.cleanTests}"
+								disabled="#{testsExtAuthBean.tests == null ? 'true' : 'false'}"
+								icon="fa fa-eraser" />
+						</h:form>
+					</f:facet>
+				</p:toolbar>
+			</p:panel>
+
+			<p:panel id="basic" header="Resultado dos Testes" footer="Total de testes: #{testsExtAuthBean.totalTests} | 
+					Total sucesso: #{testsExtAuthBean.totalTestsSucess} | Total erros: #{testsExtAuthBean.totalTestsError}"
+				style="margin-bottom:20px">
+
+				<p:dataTable var="test" value="#{testsExtAuthBean.processedTests}"	scrollable="true" scrollHeight="400" resizableColumns="true">
+					<p:column headerText="Index" width="50" style="text-align:center">
+						<h:outputText value="#{test.index}" />
+					</p:column>
+					<p:column headerText="Status" width="90" style="text-align:center">
+						<h:graphicImage library="img" name="#{test.status eq 'SUCCESS' ? 'success_32x32.png' : 'error_32x32.png'}" />
+					</p:column>
+					<p:column headerText="Action" width="100" style="text-align:center">
+						<h:outputText value="#{test.action}" />
+					</p:column>
+					<p:column headerText="Account Id" width="500" style="text-align:center">
+						<h:outputText value="#{test.accountId}" converter="strnacon" />
+					</p:column>
+					<p:column headerText="Type" style="text-align:center">
+						<h:outputText value="#{test.type}" converter="strnacon" />
+					</p:column>
+					<p:column headerText="Trunc Card Number" width="150" style="text-align:center">
+						<h:outputText value="#{test.truncCardNumber}" converter="strnacon" />
+					</p:column>
+					<p:column headerText="Commerce Name" width="150" style="text-align:center">
+						<h:outputText value="#{test.commerceName}" converter="strnacon" />
+					</p:column>
+					<p:column headerText="Amount" style="text-align:center">
+						<h:outputText value="#{test.amount}" converter="strnacon" />
+					</p:column>
+					<p:column headerText="Cod. Expected" width="120" style="text-align:center">
+						<h:outputText value="#{test.codeExpected}" converter="strnacon" />
+					</p:column>
+					<p:column headerText="Cod Returned" width="120" style="text-align:center">
+						<h:outputText value="#{test.codeReturned}" converter="strnacon" />
+					</p:column>
+					<p:column headerText="Resp. Code" style="text-align:center">
+						<h:outputText value="#{test.responseCode}" />
+					</p:column>
+					<p:column headerText="Detalhes" style="text-align:center">
+						<p:commandButton icon="ui-icon-extlink" oncomplete="PF('dlg1').show();" process="@this" 
+							action="#{testsExtAuthBean.detailTest}" update=":formDetalhesTeste:detalhesTeste">
+							
+							<f:setPropertyActionListener value="#{test}" target="#{testsExtAuthBean.testSelected}" />
+							
+						</p:commandButton>
+					</p:column>
+				</p:dataTable>
+				
+			</p:panel>
+
+			<p:dialog header="Detalhes do Teste" widgetVar="dlg1" modal="true" showEffect="size" hideEffect="size" width="1650" height="880">
+				<ui:include src="/pages/detailTest.xhtml" />
+			</p:dialog>
+
+			<script type="text/javascript">
+				function start() {
+					PF('statusDialog').show();
+				}
+
+				function stop() {
+					PF('statusDialog').hide();
+				}
+			</script>
+
+		</ui:define>
+
+	</ui:composition>
+	
+</h:body>
+
+</html>

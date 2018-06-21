@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.6.0.final using JasperReports Library version 6.6.0  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report_test_subreport_fail" pageWidth="802" pageHeight="555" orientation="Landscape" columnWidth="802" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="d52d5a5c-07c4-44fe-ad16-4ed2e0dc91d9">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Test Report Adapter"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
+	<queryString>
+		<![CDATA[SELECT
+     TestModelReport.requestJsonMessage AS requestJsonMessage,
+     TestModelReport.responseJsonMessage AS responseJsonMessage,
+     TestModelReport.idx AS idx,
+     TestModelReport.action AS action
+FROM
+     TestModelReport TestModelReport
+WHERE
+    TestModelReport.status = 'ERROR']]>
+	</queryString>
+	<field name="responseJsonMessage" class="java.lang.String">
+		<fieldDescription><![CDATA[responseJsonMessage]]></fieldDescription>
+	</field>
+	<field name="action" class="java.lang.String">
+		<fieldDescription><![CDATA[action]]></fieldDescription>
+	</field>
+	<field name="requestJsonMessage" class="java.lang.String">
+		<fieldDescription><![CDATA[requestJsonMessage]]></fieldDescription>
+	</field>
+	<field name="idx" class="java.lang.Integer">
+		<fieldDescription><![CDATA[idx]]></fieldDescription>
+	</field>
+	<background>
+		<band/>
+	</background>
+	<title>
+		<band height="32">
+			<frame>
+				<reportElement mode="Opaque" x="0" y="0" width="802" height="31" backcolor="#405058" uuid="a2b434e9-7aa6-4f26-9ab7-5cd449cdfed0"/>
+				<staticText>
+					<reportElement x="117" y="0" width="323" height="30" forecolor="#FFFFFF" uuid="72b3f051-34ef-4cd0-ae00-417f1859a93e"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="15" isBold="true"/>
+					</textElement>
+					<text><![CDATA[Testes com inconformidades]]></text>
+				</staticText>
+			</frame>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="21">
+			<line>
+				<reportElement x="0" y="15" width="802" height="2" forecolor="#666666" uuid="91058652-5c41-4405-9671-04da8e9ec285"/>
+			</line>
+			<staticText>
+				<reportElement mode="Opaque" x="1" y="0" width="48" height="14" forecolor="#426272" backcolor="#E6E6E6" uuid="baac9ea2-6902-41ea-9a2d-4ed9274074b8"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Idx]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="52" y="0" width="98" height="14" forecolor="#426272" backcolor="#E6E6E6" uuid="0e23917a-b449-409f-b75e-400d7063ab90"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Action]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="153" y="0" width="323" height="14" forecolor="#426272" backcolor="#E6E6E6" uuid="f01fb454-3f78-4cc7-a0a8-5500b0e14dde"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Request]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="479" y="0" width="323" height="14" forecolor="#426272" backcolor="#E6E6E6" uuid="1815eb44-e89c-48e2-a3a2-01569970bfb0"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Response]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="21">
+			<line>
+				<reportElement positionType="FixRelativeToBottom" x="0" y="15" width="802" height="1" uuid="6b8d3c6a-e994-4c9c-9e18-213ca2909334"/>
+			</line>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="1" y="0" width="48" height="15" uuid="c8623df9-a5a8-4873-b349-0f27cb9ae489"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{idx}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="52" y="0" width="98" height="15" uuid="55eafbe3-6ff0-4551-abce-3dddb93f879a"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{action}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="153" y="0" width="323" height="15" uuid="e0f6b55d-24e4-4c68-bf85-ff2c5c47b076"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{requestJsonMessage}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="479" y="0" width="323" height="15" uuid="f1f480ef-5030-4831-b107-a11ce116c5c8"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{responseJsonMessage}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band/>
+	</columnFooter>
+	<summary>
+		<band height="12">
+			<staticText>
+				<reportElement x="0" y="0" width="77" height="12" uuid="595aeff8-bc5b-4554-b4e2-d4e48e670ed2"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total de Erros:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="77" y="0" width="100" height="12" uuid="2bede0c0-606d-4b54-b1bf-a3a3764c99b6"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

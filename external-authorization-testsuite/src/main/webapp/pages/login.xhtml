@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<h:outputStylesheet name="login.css" library="css" />
+</h:head>
+
+<f:view locale="#{localeBean.locale}">
+
+	<h:body>
+
+		<p:growl id="growl" showDetail="false" life="6000" />
+
+		<p:dialog header="Login - #{msg['label.title.system']}" widgetVar="dlg1" modal="true"
+			closable="false" resizable="false" showEffect="size"
+			hideEffect="size" width="700" height="400" visible="true">
+			<h:form id="form-login">
+				<p:panelGrid id="panelLogin" styleClass="panelBorderNone panelLogin">
+
+					<p:row>
+						<p:column>
+							<h:outputText value="#{msg['label.login.field.user']}" />
+						</p:column>
+						<p:column colspan="2">
+							<p:inputText id="user" value="#{loginBean.user}" required="true"
+								requiredMessage="#{msg['msg.login.field.user.required']}" />
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column colspan="3">
+							<p:message for="user"></p:message>
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column>
+							<h:outputText value="#{msg['label.login.field.password']}" />
+						</p:column>
+						<p:column colspan="2">
+							<p:password id="password" value="#{loginBean.password}"
+								required="true"
+								requiredMessage="#{msg['msg.login.field.password.required']}" />
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column colspan="3">
+							<p:message for="password"></p:message>
+						</p:column>
+					</p:row>
+
+					<p:row>
+						<p:column colspan="3" style="align-content: center;">
+							<p:commandButton value="#{msg['label.login.button.submit']}"
+								id="button-login" update="growl form-login"
+								actionListener="#{loginBean.login}" />
+						</p:column>
+					</p:row>
+
+				</p:panelGrid>
+			</h:form>
+		</p:dialog>
+
+	</h:body>
+
+</f:view>
+
+</html>
