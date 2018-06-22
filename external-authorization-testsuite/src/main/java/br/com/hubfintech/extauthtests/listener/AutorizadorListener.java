@@ -1,7 +1,5 @@
 package br.com.hubfintech.extauthtests.listener;
 
-import javax.faces.application.NavigationHandler;
-import javax.faces.context.FacesContext;
 import javax.faces.event.PhaseEvent;
 import javax.faces.event.PhaseId;
 import javax.faces.event.PhaseListener;
@@ -12,7 +10,7 @@ public class AutorizadorListener implements PhaseListener {
 
 	@Override
 	public void afterPhase(PhaseEvent event) {
-		FacesContext context = event.getFacesContext();
+		/*FacesContext context = event.getFacesContext();
 		String nomePagina = context.getViewRoot().getViewId();
 
 		System.out.println(nomePagina);
@@ -32,7 +30,7 @@ public class AutorizadorListener implements PhaseListener {
 
 		NavigationHandler handler = context.getApplication().getNavigationHandler();
 		handler.handleNavigation(context, null, "/pages/login?faces-redirect=true");
-		context.renderResponse();
+		context.renderResponse();*/
 	}
 
 	@Override

@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import br.com.hubfintech.extauthtests.enums.EStatusTest;
 import br.com.hubfintech.extauthtests.exception.TestExtAuthException;
 import br.com.hubfintech.extauthtests.functional.ThrowingConsumer;
+import br.com.hubfintech.extauthtests.infra.IConnectionLDAPInfra;
 import br.com.hubfintech.extauthtests.model.TestModel;
 import br.com.hubfintech.extauthtests.model.TestModelReport;
 import br.com.hubfintech.extauthtests.report.GeradorRelatorio;
@@ -48,6 +50,9 @@ public class ExtAuthorizationTestService implements IExtAuthorizationTestService
 
 	@Inject
 	private HttpServletRequest request;
+	
+	@Inject
+	IConnectionLDAPInfra authenticator;
 
 	@Override
 	public List<TestModel> executeTests(String tests, String url, Integer port) throws TestExtAuthException {
@@ -221,6 +226,11 @@ public class ExtAuthorizationTestService implements IExtAuthorizationTestService
 			log.error("Erro ao gerar relatório.", ex);
 			throw new TestExtAuthException(ex);
 		}
+	}
+
+	@Override
+	public List<String> authenticate(String user, String securityToken, String domain) throws NamingException {
+		return authenticator.authenticate(user, securityToken, domain);
 	}
 
 }
