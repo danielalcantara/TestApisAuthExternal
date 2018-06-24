@@ -20,47 +20,65 @@ import org.springframework.stereotype.Component;
 public class ConnectionLDAPInfra implements IConnectionLDAPInfra {
 
 	private static final String MEMBER_OF = "memberOf";
+	private static final String LDAP_URL = "ldap://192.168.56.2:389";
+	private static final String DEFAULT_DOMAIN = "systemfactory.com.br";
 
 	@Override
-	public List<String> authenticate(String user, String securityToken, String domain) throws NamingException {
+	public List<String> authenticate(String userName, String passWord, String domain) throws NamingException {
 
-		Hashtable<String, String> env = new Hashtable<>();
-		env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-		env.put(Context.PROVIDER_URL, "LDAP://" + domain);
-		env.put(Context.SECURITY_AUTHENTICATION, "simple");
-		env.put(Context.SECURITY_PRINCIPAL, user + "@" + domain);
-		env.put(Context.SECURITY_CREDENTIALS, securityToken);
-
-		InitialDirContext ctx = new InitialDirContext(env);
-
-		String[] dcParts = domain.split("\\.");
-		String domainSearch = "";
-		for (String dcPart : dcParts) {
-			domainSearch += "DC=" + dcPart + ",";
-		}
-		domainSearch = domainSearch.substring(0, domainSearch.length() - 1);
-
-		// Create the search controls
-		SearchControls searchCtls = new SearchControls();
-		String[] attributes = new String[] { MEMBER_OF };
-		searchCtls.setReturningAttributes(attributes);
-
-		// Specify the search scope
-		searchCtls.setSearchScope(SearchControls.SUBTREE_SCOPE);
-
-		// Search for objects using the filter
-		NamingEnumeration<?> result = ctx.search(domainSearch, MessageFormat.format("(SAMAccountName={0})", user),
-				searchCtls);
-
-		// Get the first result
-		SearchResult sr = (SearchResult) result.next();
-
-		Attribute memberOf = sr.getAttributes().get(MEMBER_OF);
+		Hashtable<String, String> authEnv = new Hashtable<>();
+		String securityPrincipal = userName + "@" + domain;
 		List<String> memberOfGroups = new ArrayList<>();
-		if (memberOf != null) {
-			for (Enumeration<?> e1 = memberOf.getAll(); e1.hasMoreElements();) {
-				memberOfGroups.add(e1.nextElement().toString());
+
+		authEnv.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+		authEnv.put(Context.PROVIDER_URL, LDAP_URL);
+		authEnv.put(Context.SECURITY_AUTHENTICATION, "simple");
+		authEnv.put(Context.SECURITY_PRINCIPAL, securityPrincipal);
+		authEnv.put(Context.SECURITY_CREDENTIALS, passWord);
+
+		try {
+
+			DirContext authContext = new InitialDirContext(authEnv);
+
+			String[] dcParts = domain.split("\\.");
+			String domainSearch = "";
+			
+			for (String dcPart : dcParts) {
+				domainSearch += "DC=" + dcPart + ",";
 			}
+			
+			domainSearch = domainSearch.substring(0, domainSearch.length() - 1);
+
+			// Create the search controls
+			SearchControls searchCtls = new SearchControls();
+			String[] attributes = new String[] { MEMBER_OF };
+			searchCtls.setReturningAttributes(attributes);
+
+			// Specify the search scope
+			searchCtls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+
+			// Search for objects using the filter
+			NamingEnumeration<?> result = authContext.search(domainSearch, MessageFormat.format("(SAMAccountName={0})", userName),
+					searchCtls);
+
+			// Get the first result
+			SearchResult sr = (SearchResult) result.next();
+
+			Attribute memberOf = sr.getAttributes().get(MEMBER_OF);
+			
+			if (memberOf != null) {
+				for (Enumeration<?> e1 = memberOf.getAll(); e1.hasMoreElements();) {
+					memberOfGroups.add(e1.nextElement().toString());
+				}
+			}
+
+			System.out.println("Authentication Success!");
+			
+		} catch (AuthenticationException authEx) {
+			System.out.println("Authentication failed!");
+		} catch (NamingException namEx) {
+			System.out.println("Something went wrong!");
+			namEx.printStackTrace();
 		}
 
 		return memberOfGroups;
