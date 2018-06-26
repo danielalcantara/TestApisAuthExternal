@@ -1,0 +1,14 @@
+package br.com.cea.repository;
+
+import java.util.List;
+
+import br.com.cea.model.GarantiaModel;
+import br.com.cea.model.PagamentoModel;
+
+public interface IPagamentoReportRepository {
+
+	public List<GarantiaModel> buscarGarantia(Integer idConttato) throws Exception;
+	
+	public Integer salvarPagamento(PagamentoModel valoresPagamento) throws Exception;
+	
+}

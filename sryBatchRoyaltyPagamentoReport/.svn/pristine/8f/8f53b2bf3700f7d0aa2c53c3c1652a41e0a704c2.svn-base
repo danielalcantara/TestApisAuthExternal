@@ -1,0 +1,28 @@
+package br.com.cea.app;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+
+import br.com.cea.config.BeanConfiguration;
+import br.com.cea.processar.ProcessarPagamentoReport;
+
+@Configuration
+@ComponentScan
+public class App {
+
+	public static void main(String[] args) {
+
+		ConfigurableApplicationContext ctx = null;
+		
+		SpringApplication app = new SpringApplication(BeanConfiguration.class);
+		ctx = app.run(args);
+		
+		ProcessarPagamentoReport cto = (ProcessarPagamentoReport) ctx.getBean(ProcessarPagamentoReport.class);
+		cto.processar();
+		
+		System.exit(0);
+	}
+
+}

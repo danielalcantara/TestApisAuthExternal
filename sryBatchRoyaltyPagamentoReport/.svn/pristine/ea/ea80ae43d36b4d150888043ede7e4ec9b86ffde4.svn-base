@@ -1,0 +1,24 @@
+package br.com.cea.processar;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
+
+import br.com.cea.bo.ICalculoValoresParcelaBO;
+import br.com.cea.factory.CalculoValoresFactory;
+import br.com.cea.model.ParcelaModel;
+
+@Component
+public class ProcessarPagamentoReport {
+
+	private ICalculoValoresParcelaBO bo;
+	
+	private static Logger logger = LogManager.getLogger();
+
+	public void processar() {
+		
+		ParcelaModel parcela = new ParcelaModel();
+		bo = CalculoValoresFactory.getCalculoValores(parcela.getTipo());
+		
+	}
+}

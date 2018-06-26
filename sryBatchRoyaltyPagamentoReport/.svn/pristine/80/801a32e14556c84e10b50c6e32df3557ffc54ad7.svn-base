@@ -1,0 +1,33 @@
+package br.com.cea.bo.impl;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import br.com.cea.bo.IProcessarPagamentoReportBO;
+import br.com.cea.dao.IPagamentoReportDAO;
+import br.com.cea.model.ContratoModel;
+import br.com.cea.model.LancamentoPeriodoModel;
+import br.com.cea.model.PagamentoModel;
+
+public class ProcessarPagamentoReportGMPUI implements IProcessarPagamentoReportBO {
+	
+	@Autowired
+	private IPagamentoReportDAO pagamentoReportDAO;
+
+	@Override
+	public LancamentoPeriodoModel processarReport(ContratoModel contrato) throws Exception {
+		LancamentoPeriodoModel lancamentoPeriodoModel = pagamentoReportDAO.fetchLancamentoPeriodo(contrato.getId());
+		
+		if (lancamentoPeriodoModel == null) {
+			
+		}
+		
+		return null;
+	}
+
+	@Override
+	public PagamentoModel processarPagamento(ContratoModel contrato) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+}

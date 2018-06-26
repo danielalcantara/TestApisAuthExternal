@@ -1,0 +1,63 @@
+package br.com.cea.model;
+
+import java.util.Date;
+import java.util.Set;
+
+public class PeriodoModel {
+
+	private Long id;
+	private Long idContrato;
+	private Date dataInicio;
+	private Date dataFim;
+	private Double valor;
+	private Set<ParcelaModel> parcelas;
+
+	public Date getDataInicio() {
+		return dataInicio;
+	}
+
+	public void setDataInicio(Date dataInicio) {
+		this.dataInicio = dataInicio;
+	}
+
+	public Date getDataFim() {
+		return dataFim;
+	}
+
+	public void setDataFim(Date dataFim) {
+		this.dataFim = dataFim;
+	}
+
+	public Double getValor() {
+		return valor;
+	}
+
+	public void setValor(Double valor) {
+		this.valor = valor;
+	}
+
+	public Set<ParcelaModel> getParcelas() {
+		return parcelas;
+	}
+
+	public void setParcelas(Set<ParcelaModel> parcelas) {
+		this.parcelas = parcelas;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Long getIdContrato() {
+		return idContrato;
+	}
+
+	public void setIdContrato(Long idContrato) {
+		this.idContrato = idContrato;
+	}
+
+}

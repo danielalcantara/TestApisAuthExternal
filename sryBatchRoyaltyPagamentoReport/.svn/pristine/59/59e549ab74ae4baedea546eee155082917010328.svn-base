@@ -1,0 +1,363 @@
+package br.com.cea.dao;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
+
+import br.com.cea.model.ConsumoModel;
+import br.com.cea.model.ContratoModel;
+import br.com.cea.model.GarantiaModel;
+import br.com.cea.model.LancamentoPedidoModel;
+import br.com.cea.model.LancamentoPeriodoModel;
+import br.com.cea.model.PagamentoModel;
+import br.com.cea.model.ParcelaModel;
+import br.com.cea.model.PedidoSkuModel;
+import br.com.cea.model.PeriodoModel;
+import br.com.cea.util.DateUtil;
+
+@Component
+@PropertySource({"classpath:queries.properties"})
+public class PagamentoReportDAO extends GenericDAO implements IPagamentoReportDAO {
+
+	public void savePagamento(PagamentoModel pagamentoModel) throws Exception {
+
+		Long idPagamento = getIdPagamento();
+
+		pagamentoModel.setId(idPagamento);
+		pagamentoModel.setDataInclusaoRegistro(DateUtil.getDateAtual());
+
+		jdbcTemplate.update(env.getProperty("INSERT_TABLE_PAGAMENTO"),
+				new Object[] { pagamentoModel.getId(), pagamentoModel.getNumeroContrato(),
+						pagamentoModel.getValorConsumo(), pagamentoModel.getValorParcela(),
+						pagamentoModel.getValorPagamento(), pagamentoModel.getValorSaldo(),
+						pagamentoModel.getDataInclusaoRegistro(), pagamentoModel.getIdTabelaReport(),
+						pagamentoModel.getNumeroContratoParcela(), pagamentoModel.getNumeroSequencialGarantia(),
+						pagamentoModel.getNumeroContratoParcela() });
+
+	}
+
+	private Long getIdPagamento() {
+		return super.getId(env.getProperty("GET_ID_PAGAMENTO"));
+	}
+
+	@Override
+	public void saveLancamentoPedido(LancamentoPedidoModel lancamentoPedido) throws Exception {
+		Long idPedido = getIdPedido();
+
+		lancamentoPedido.setId(idPedido);
+		lancamentoPedido.setDataInclusaoRegistro(DateUtil.getDateAtual());
+
+		jdbcTemplate.update(env.getProperty("INSERT_TABLE_CONSOLIDA_PEDIDO"),
+				new Object[] { lancamentoPedido.getId(), lancamentoPedido.getDataRecebementoDevolucaoItem(),
+						lancamentoPedido.getValorBruto(), lancamentoPedido.getValorLiquido(),
+						lancamentoPedido.getCodigoDivisao(), lancamentoPedido.getCodigoDepartamento(),
+						lancamentoPedido.getDataGeracaoArquivo(), lancamentoPedido.getDataVencimentoArquivoSap(),
+						lancamentoPedido.getNumeroAtributoUsuario(), lancamentoPedido.getCodigoValorAtbUsuario(),
+						lancamentoPedido.getDataInclusaoRegistro() });
+
+		savePedidoSku(lancamentoPedido);
+
+	}
+
+	private void savePedidoSku(LancamentoPedidoModel lancamentoPedido) throws Exception {
+		Long idPedido = lancamentoPedido.getId();
+		for (PedidoSkuModel list : lancamentoPedido.getListaPedidoSku()) {
+			jdbcTemplate.update(env.getProperty("INSERT_TABLE_PEDIDO_SKU"),
+					new Object[] { idPedido, list.getCodigoFornecedor(), list.getNuNfItem(), list.getDataEmsNf(),
+							list.getCdItem(), list.getNiLocEtg() });
+		}
+	}
+
+	private Long getIdPedido() {
+		return super.getId(env.getProperty("GET_ID_PEDIDO"));
+	}
+
+	@Override
+	public void saveLancamentoPeriodo(LancamentoPeriodoModel lancamentoPeriodo) throws Exception {
+		Long idReport = getIdReport();
+
+		lancamentoPeriodo.setId(idReport);
+		lancamentoPeriodo.setDataInclusaoRegistro(DateUtil.getDateAtual());
+		lancamentoPeriodo.setDataAlteracaoRegistro(DateUtil.getDateAtual());
+
+		jdbcTemplate.update(env.getProperty("INSERT_TABLE_CONSOLIDA_PERIODO"),
+				new Object[] { lancamentoPeriodo.getId(), lancamentoPeriodo.getIdContrato(),
+						lancamentoPeriodo.getValorBrutoConsolidado(), lancamentoPeriodo.getValorLiquidoConsolidado(),
+						lancamentoPeriodo.getDataAlteracaoRegistro(), lancamentoPeriodo.getCodigoPeriodicidade(),
+						lancamentoPeriodo.getDataInicioReport(), lancamentoPeriodo.getDataFimReport(),
+						lancamentoPeriodo.getDataInclusaoRegistro(), lancamentoPeriodo.getStatusReport() });
+
+		savePedidoPeriodo(lancamentoPeriodo);
+	}
+
+	private void savePedidoPeriodo(LancamentoPeriodoModel lancamentoPeriodo) throws Exception {
+		Long idPeriodo = lancamentoPeriodo.getId();
+		for (LancamentoPedidoModel lancamentoPedidoModel : lancamentoPeriodo.getLancamentosPedido()) {
+			jdbcTemplate.update(env.getProperty("INSERT_TABLE_PEDIDO_PERIODO"),
+					new Object[] { idPeriodo, lancamentoPedidoModel.getId() });
+		}
+	}
+
+	private Long getIdReport() {
+		return super.getId(env.getProperty("GET_ID_REPORT"));
+	}
+
+	@Override
+	public GarantiaModel fetchGarantia(Long idConttato) throws Exception {
+		List<GarantiaModel> garantias = jdbcTemplate.query(env.getProperty("SELECT_TABLE_GARANTIA"),
+				new Object[] { idConttato }, new RowMapper<GarantiaModel>() {
+
+					@Override
+					public GarantiaModel mapRow(ResultSet rs, int arg1) throws SQLException {
+						GarantiaModel model = new GarantiaModel();
+						model.setId(rs.getLong("NI_CTO_RTY"));
+						model.setValor(rs.getDouble("VL_SLD_GRT_CTO"));
+						return model;
+					}
+
+				});
+
+		GarantiaModel garantia = garantias.get(0);
+		garantia.setListPeriodos(fetchPeriodos(garantia.getIdContrato()));
+
+		return garantias != null ? garantias.get(0) : null;
+	}
+
+	@Override
+	public Set<PeriodoModel> fetchPeriodos(Long idContrato) throws Exception {
+		Set<PeriodoModel> models = new HashSet<>();
+		List<PeriodoModel> periodos = jdbcTemplate.query(env.getProperty("SELECT_TABLE_PERIODO"),
+				new Object[] { idContrato }, new RowMapper<PeriodoModel>() {
+
+					@Override
+					public PeriodoModel mapRow(ResultSet rs, int arg1) throws SQLException {
+						PeriodoModel model = new PeriodoModel();
+						model.setId(rs.getLong("NI_SEQ_GRT"));
+						model.setIdContrato(rs.getLong("NI_CTO_RTY"));
+						model.setDataInicio(rs.getDate("DT_INI_PRZ_PAG_PAR_GRT"));
+						model.setDataFim(rs.getDate("DT_FIM_PRZ_PAG_PAR_GRT"));
+						model.setValor(rs.getDouble("VL_PAR_GRT_CTO_RTY"));
+						return model;
+					}
+				});
+
+		for (PeriodoModel periodo : periodos) {
+			periodo.setParcelas(fetchParcelas(periodo.getId(), periodo.getIdContrato()));
+			models.add(periodo);
+		}
+
+		return models;
+	}
+
+	@Override
+	public Set<ParcelaModel> fetchParcelas(Long idPeriodo, Long idContrato) throws Exception {
+
+		List<ParcelaModel> parcelas = jdbcTemplate.query(env.getProperty("SELECT_TABLE_PARCELAS"),
+				new Object[] { idPeriodo, idContrato }, new RowMapper<ParcelaModel>() {
+
+					@Override
+					public ParcelaModel mapRow(ResultSet rs, int arg1) throws SQLException {
+						ParcelaModel model = new ParcelaModel();
+						model.setId(rs.getLong("NI_SEQ_PAR"));
+						model.setIdPeriodo(rs.getLong("NI_SEQ_GRT"));
+						model.setIdContrato(rs.getLong("NI_CTO_RTY"));
+						model.setDataVencimento(rs.getDate("DT_PGT_GRT"));
+						model.setValor(rs.getDouble("VL_PAR_GRT"));
+						return model;
+					}
+
+				});
+
+		return new HashSet<ParcelaModel>(parcelas);
+	}
+
+	@Override
+	public ContratoModel fetchContrato(Long idContrato) throws Exception {
+
+		List<ContratoModel> contratos = jdbcTemplate.query(env.getProperty("SELECT_TABLE_CONTRATO"),
+				new Object[] { idContrato }, new RowMapper<ContratoModel>() {
+
+					@Override
+					public ContratoModel mapRow(ResultSet rs, int arg1) throws SQLException {
+						ContratoModel model = new ContratoModel();
+						model.setId(rs.getLong("NI_CTO_RTY"));
+						model.setDataInicio(rs.getDate("DT_INI_VIG_CTO"));
+						model.setDataFim(rs.getDate("DT_TOL_REC_ITEM"));
+						model.setPeriodicidade(rs.getInt("CD_PER_REP_RTY"));
+						model.setTipoGarantia(rs.getString("CD_TPO_GRT"));
+						return model;
+					}
+				});
+
+		return contratos != null ? contratos.get(0) : null;
+	}
+
+	@Override
+	public LancamentoPeriodoModel fetchLancamentoPeriodo(Long idContrato) throws Exception {
+		List<LancamentoPeriodoModel> lancamentos = jdbcTemplate.query(env.getProperty("SELECT_TABLE_CONSOLIDA_PERIODO"),
+				new Object[] { idContrato }, new RowMapper<LancamentoPeriodoModel>() {
+
+					@Override
+					public LancamentoPeriodoModel mapRow(ResultSet rs, int arg1) throws SQLException {
+						LancamentoPeriodoModel model = new LancamentoPeriodoModel();
+						model.setId(rs.getLong("NI_SEQ_LCT_PGT"));
+						model.setIdContrato(rs.getLong("NI_CTO_RTY"));
+						model.setValorBrutoConsolidado(rs.getDouble("VL_DA_BRT_CNS"));
+						model.setValorLiquidoConsolidado(rs.getDouble("VL_DA_LIQ_CNS"));
+						model.setDataAlteracaoRegistro(rs.getDate("DT_ALT_REG_GRT"));
+						model.setCodigoPeriodicidade(rs.getInt("CD_PER_REP_RTY"));
+						model.setDataInclusaoRegistro(rs.getDate("TS_INC_REG"));
+						model.setDataInicioReport(rs.getDate("DT_INI_RPT"));
+						model.setDataFimReport(rs.getDate("DT_FIM_RPT"));
+						model.setStatusReport(rs.getString("ST_RPT"));
+						model.setIdPeriodo(rs.getLong("NI_SEQ_GRT"));
+						return model;
+					}
+
+				});
+
+		LancamentoPeriodoModel lancamento = lancamentos.get(0);
+		lancamento.setLancamentosPedido(fetchPedido(lancamento.getId()));
+		return lancamento;
+	}
+
+	@Override
+	public Set<LancamentoPedidoModel> fetchPedido(Long idPeriodo) throws Exception {
+		List<LancamentoPedidoModel> pedidos = jdbcTemplate.query(env.getProperty("SELECT_TABLE_PEDIDO_SAP"),
+				new Object[] { idPeriodo }, new RowMapper<LancamentoPedidoModel>() {
+
+					@Override
+					public LancamentoPedidoModel mapRow(ResultSet rs, int arg1) throws SQLException {
+						LancamentoPedidoModel model = new LancamentoPedidoModel();
+						model.setId(rs.getLong("NI_LCT_CNS_PDO"));
+						model.setIdContrato(rs.getLong("NI_CTO_RTY"));
+						model.setDataRecebementoDevolucaoItem(rs.getDate("DT_FNZ_REC_ITEM"));
+						model.setValorBruto(rs.getDouble("VL_BRT_DIRT_AUTL_REC_ITEM"));
+						model.setValorLiquido(rs.getDouble("VL_LIQ_DIRT_AUTL_REC_ITEM"));
+						model.setCodigoDepartamento(rs.getLong("CD_DPT"));
+						model.setCodigoDivisao(rs.getLong("CD_DIV"));
+						return model;
+					}
+
+				});
+		return new HashSet<LancamentoPedidoModel>(pedidos);
+	}
+
+	@Override
+	public LancamentoPeriodoModel fetchLancamentoPeriodoAberto(Long idContrato) throws Exception {
+		List<LancamentoPeriodoModel> lancamentos = jdbcTemplate.query(
+				env.getProperty("SELECT_TABLE_CONSOLIDA_PERIODO_ABERTO"), new Object[] { idContrato },
+				new RowMapper<LancamentoPeriodoModel>() {
+
+					@Override
+					public LancamentoPeriodoModel mapRow(ResultSet rs, int arg1) throws SQLException {
+						LancamentoPeriodoModel model = new LancamentoPeriodoModel();
+						model.setId(rs.getLong("NI_SEQ_LCT_PGT"));
+						model.setIdContrato(rs.getLong("NI_CTO_RTY"));
+						model.setValorBrutoConsolidado(rs.getDouble("VL_DA_BRT_CNS"));
+						model.setValorLiquidoConsolidado(rs.getDouble("VL_DA_LIQ_CNS"));
+						model.setDataAlteracaoRegistro(rs.getDate("DT_ALT_REG_GRT"));
+						model.setCodigoPeriodicidade(rs.getInt("CD_PER_REP_RTY"));
+						model.setDataInclusaoRegistro(rs.getDate("TS_INC_REG"));
+						model.setDataInicioReport(rs.getDate("DT_INI_RPT"));
+						model.setDataFimReport(rs.getDate("DT_FIM_RPT"));
+						model.setStatusReport(rs.getString("ST_RPT"));
+						model.setIdPeriodo(rs.getLong("NI_SEQ_GRT"));
+						return model;
+					}
+
+				});
+
+		LancamentoPeriodoModel lancamento = lancamentos.get(0);
+		lancamento.setLancamentosPedido(fetchPedido(lancamento.getId()));
+		return lancamento;
+	}
+
+	@Override
+	public void updateLancamentoPeriodo(LancamentoPeriodoModel lancamentoPeriodo) throws Exception {
+		
+		jdbcTemplate.update(env.getProperty("UPDATE_TABLE_CONSOLIDADA_PERIODO"),
+				new Object[] { lancamentoPeriodo.getId(), lancamentoPeriodo.getIdContrato(),
+						lancamentoPeriodo.getValorBrutoConsolidado(), lancamentoPeriodo.getValorLiquidoConsolidado(),
+						lancamentoPeriodo.getDataAlteracaoRegistro(), lancamentoPeriodo.getCodigoPeriodicidade(),
+						lancamentoPeriodo.getDataInicioReport(), lancamentoPeriodo.getDataFimReport(),
+						lancamentoPeriodo.getDataInclusaoRegistro(), lancamentoPeriodo.getStatusReport() });
+
+		savePedidoPeriodo(lancamentoPeriodo);
+
+	}
+
+	@Override
+	public Set<ConsumoModel> fetchConsumos() throws Exception {
+		List<ConsumoModel> consumos = jdbcTemplate.query(env.getProperty("SELECT_VIEW_REC_DEV"),
+				new ResultSetExtractor<List<ConsumoModel>>() {
+
+					@Override
+					public List<ConsumoModel> extractData(ResultSet rs) throws SQLException, DataAccessException {
+
+						List<ConsumoModel> models = new ArrayList<>();
+
+						while (rs.next()) {
+							ConsumoModel model = new ConsumoModel();
+							model.setCdItem(rs.getString("CD_ITEM"));
+							model.setDataEmsNf(rs.getDate("DT_EMS_NF"));
+							model.setDataFnzRecItem(rs.getDate("DT_FNZ_REC_ITEM"));
+							model.setIdContrato(rs.getLong("NI_CTO_RTY"));
+							model.setIdFor(rs.getLong("CD_FOR"));
+							model.setNiLocEtc(rs.getLong("NI_LOC_ETG"));
+							model.setNumNfItem(rs.getString("NU_NF_ITEM"));
+							model.setNuOrdCom(rs.getString("NU_ORD_COM"));
+							model.setOrigem(rs.getString("ORIGEM"));
+							model.setValorBruto(rs.getDouble("VL_BRU_DIRT_AUTL_REC_ITEM"));
+							model.setValorLiquido(rs.getDouble("VL_LIQ_DIRT_AUTL_REC_ITEM"));
+							models.add(model);
+						}
+						return models;
+					}
+				});
+		return new HashSet<ConsumoModel>(consumos);
+	}
+
+	@Override
+	public Set<LancamentoPeriodoModel> fetchLancamentoPeriodoPorPeriodo(Long idContrato, Long idPeriodo)
+			throws Exception {
+		List<LancamentoPeriodoModel> periodos = jdbcTemplate.query(env.getProperty("SELECT_TABLE_CONSOLIDA_PERIODO_PERIODO"), 
+				new Object[] {idContrato, idPeriodo},
+				new ResultSetExtractor<List<LancamentoPeriodoModel>>(){
+
+					@Override
+					public List<LancamentoPeriodoModel> extractData(ResultSet rs)
+							throws SQLException, DataAccessException {
+						List<LancamentoPeriodoModel> models = new ArrayList<>();
+						
+						while (rs.next()){
+							LancamentoPeriodoModel model = new LancamentoPeriodoModel();
+							model.setCodigoPeriodicidade(rs.getInt("CD_PER_REP_RTY"));
+							model.setDataAlteracaoRegistro(rs.getDate("DT_ALT_REG_GRT"));
+							model.setDataFimReport(rs.getDate("DT_FIM_RPT"));
+							model.setDataInclusaoRegistro(rs.getDate("TS_INC_REG"));
+							model.setDataInicioReport(rs.getDate("DT_INI_RPT"));
+							model.setId(rs.getLong("NI_SEQ_LCT_PGT"));
+							model.setIdContrato(rs.getLong("NI_CTO_RTY"));
+							model.setIdPeriodo(rs.getLong("NI_SEQ_GRT"));
+							model.setStatusReport(rs.getString("ST_RPT"));
+							model.setValorBrutoConsolidado(rs.getDouble("VL_DA_BRT_CNS"));
+							model.setValorLiquidoConsolidado(rs.getDouble("VL_DA_LIQ_CNS"));
+							models.add(model);
+						}
+						return models;
+					}
+			
+		});
+		return new HashSet<LancamentoPeriodoModel>(periodos);
+	}
+}

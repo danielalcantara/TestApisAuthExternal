@@ -1,0 +1,252 @@
+package br.com.cea.bo.impl;
+
+import java.util.Date;
+import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import br.com.cea.dao.IPagamentoReportDAO;
+import br.com.cea.model.ContratoModel;
+import br.com.cea.model.LancamentoPedidoModel;
+import br.com.cea.model.LancamentoPeriodoModel;
+import br.com.cea.model.PagamentoModel;
+import br.com.cea.model.ParcelaModel;
+import br.com.cea.model.PeriodoModel;
+import br.com.cea.util.DateUtil;
+
+public abstract class ProcessarPagamentoReportTemplate {
+
+	private static Logger logger = LogManager.getLogger();
+
+	protected IPagamentoReportDAO pagamentoReportDAO;
+	protected ContratoModel contrato;
+	protected final Long STATUS_PARCELA_PENDENTE = 1L;
+	protected final Long STATUS_PARCELA_SUPERADA = 3L;
+
+	public void setContrato(ContratoModel contrato) {
+		this.contrato = contrato;
+	}
+
+	public void setPagamentoReportDAO(IPagamentoReportDAO pagamentoReportDAO) {
+		this.pagamentoReportDAO = pagamentoReportDAO;
+	}
+
+	public void processarReport() throws Exception {
+
+		Date currentDate = DateUtil.getDateAtual();
+
+		if (contrato.getGarantia().getListPeriodos() != null && !contrato.getGarantia().getListPeriodos().isEmpty()) {
+
+			for (PeriodoModel periodoModel : contrato.getGarantia().getListPeriodos()) {
+
+				if (periodoModel != null && periodoModel.getLancamentoPeriodo() != null
+						&& !periodoModel.getLancamentoPeriodo().getLancamentosPedido().isEmpty()
+						&& periodoModel.getParcelas() != null && !periodoModel.getParcelas().isEmpty()) {
+
+					LancamentoPeriodoModel lancamentoPeriodoAberto = getLancamentoPeriodoAberto(periodoModel);
+
+					acumularValores(periodoModel.getLancamentoPeriodo());
+
+					processarSaldo(periodoModel);
+
+					if (DateUtil.compareDateWithoutTime(lancamentoPeriodoAberto.getDataFimReport(), currentDate) <= 0) {
+						fechamentoReport(periodoModel, lancamentoPeriodoAberto);
+					}
+
+					logger.info("Iniciando atualização de lançamento de período para o contrato: " + contrato.getId());
+					updateLancamentoPeriodo(lancamentoPeriodoAberto);
+					logger.info("Atualização de lançamento de período finalizado com sucesso, contrato: "
+							+ contrato.getId());
+
+				}
+
+			}
+
+		}
+
+	}
+
+	private void updateLancamentoPeriodo(LancamentoPeriodoModel lancamentoPeriodoAberto) throws Exception {
+		persistirLancamentosPedido(lancamentoPeriodoAberto);
+		pagamentoReportDAO.updateLancamentoPeriodo(lancamentoPeriodoAberto);
+	}
+
+	protected void fechamentoReport(PeriodoModel periodoModel, LancamentoPeriodoModel lancamentoPeriodoAberto)
+			throws Exception {
+		logger.info("Iniciando fechamento de report, para o contrato: " + contrato.getId());
+
+		LancamentoPeriodoModel lancamentoPeriodoModelNew = new LancamentoPeriodoModel();
+		Date dataFim = DateUtil.addMonthsOnDate(lancamentoPeriodoAberto.getDataFimReport(),
+				contrato.getPeriodicidade());
+		lancamentoPeriodoModelNew.setDataFimReport(dataFim);
+		lancamentoPeriodoModelNew
+				.setDataInicioReport(DateUtil.addDaysOnDate(lancamentoPeriodoAberto.getDataFimReport(), 1));
+		lancamentoPeriodoModelNew.setStatusReport("A");
+		lancamentoPeriodoModelNew.setIdContrato(contrato.getId());
+		lancamentoPeriodoModelNew.setIdPeriodo(periodoModel.getId());
+		lancamentoPeriodoModelNew.setValorSaldo(lancamentoPeriodoAberto.getValorSaldo());
+		lancamentoPeriodoModelNew.setValorSaldoParcelaPendente(lancamentoPeriodoAberto.getValorSaldoParcelaPendente());
+		lancamentoPeriodoModelNew.setCodigoPeriodicidade(contrato.getPeriodicidade());
+		lancamentoPeriodoModelNew.setValorBrutoConsolidado(0D);
+		lancamentoPeriodoModelNew.setValorLiquidoConsolidado(0D);
+		lancamentoPeriodoAberto.setStatusReport("F");
+		logger.info("Salvando novo lançamento de período para fechamento de report, contrato: " + contrato.getId());
+		pagamentoReportDAO.saveLancamentoPeriodo(lancamentoPeriodoModelNew);
+		logger.info("Fechamento de report realizado com sucesso, contrato: " + contrato.getId());
+
+		processarPagamentoConsumo(lancamentoPeriodoAberto);
+	}
+
+	protected void acumularValores(LancamentoPeriodoModel lancamentoPeriodoModel) {
+		for (LancamentoPedidoModel lancamentoPedidoModel : lancamentoPeriodoModel.getLancamentosPedido()) {
+			lancamentoPeriodoModel.setValorBrutoConsolidado(
+					lancamentoPeriodoModel.getValorBrutoConsolidado() + lancamentoPedidoModel.getValorBruto());
+			lancamentoPeriodoModel.setValorLiquidoConsolidado(
+					lancamentoPeriodoModel.getValorLiquidoConsolidado() + lancamentoPedidoModel.getValorLiquido());
+		}
+	}
+
+	private LancamentoPeriodoModel getLancamentoPeriodoAberto(PeriodoModel periodoModel) throws Exception {
+		LancamentoPeriodoModel lancamentoPeriodoAberto = pagamentoReportDAO
+				.fetchLancamentoPeriodoAberto(contrato.getId(), periodoModel.getId());
+
+		if (lancamentoPeriodoAberto == null || lancamentoPeriodoAberto.getId() == null) {
+			Date dataFim = DateUtil.addMonthsOnDate(periodoModel.getDataInicio(), contrato.getPeriodicidade());
+			dataFim = DateUtil.addDaysOnDate(dataFim, -1);
+			lancamentoPeriodoAberto = new LancamentoPeriodoModel();
+			lancamentoPeriodoAberto.setCodigoPeriodicidade(contrato.getPeriodicidade());
+			lancamentoPeriodoAberto.setIdContrato(contrato.getId());
+			lancamentoPeriodoAberto.setIdPeriodo(periodoModel.getId());
+			lancamentoPeriodoAberto.setStatusReport("A");
+			lancamentoPeriodoAberto.setDataInicioReport(periodoModel.getDataInicio());
+			lancamentoPeriodoAberto.setDataFimReport(dataFim);
+			lancamentoPeriodoAberto.setValorBrutoConsolidado(0D);
+			lancamentoPeriodoAberto.setValorLiquidoConsolidado(0D);
+			lancamentoPeriodoAberto.setValorSaldo(0D);
+			lancamentoPeriodoAberto.setLancamentosPedido(periodoModel.getLancamentoPeriodo().getLancamentosPedido());
+			periodoModel.setLancamentoPeriodo(lancamentoPeriodoAberto);
+
+			pagamentoReportDAO.saveLancamentoPeriodo(lancamentoPeriodoAberto);
+		}
+
+		return lancamentoPeriodoAberto;
+	}
+
+	private void persistirLancamentosPedido(LancamentoPeriodoModel lancamentoPeriodoAberto) throws Exception {
+		logger.info("Salvando lançamentos de pedido para o contrato: " + contrato.getId());
+		for (LancamentoPedidoModel lancamentoPedido : lancamentoPeriodoAberto.getLancamentosPedido()) {
+			pagamentoReportDAO.saveLancamentoPedido(lancamentoPedido);
+		}
+		logger.info("Lançamentos de pedido salvos com sucesso para o contrato: " + contrato.getId());
+	}
+
+	protected void processarSaldo(PeriodoModel periodoModel) throws Exception {
+		List<ParcelaModel> parcelas = periodoModel.getParcelas();
+		LancamentoPeriodoModel lancamentoPeriodoAberto = periodoModel.getLancamentoPeriodo();
+
+		for (ParcelaModel parcelaModel : parcelas) {
+
+			if (DateUtil.compareDateWithoutTime(lancamentoPeriodoAberto.getDataInicioReport(),
+					parcelaModel.getDataVencimento()) <= 0
+					|| DateUtil.compareDateWithoutTime(parcelaModel.getDataVencimento(),
+							DateUtil.addDaysOnDate(lancamentoPeriodoAberto.getDataFimReport(), 10)) >= 0) {
+
+				boolean parcelaProcessada = false;
+
+				if (!STATUS_PARCELA_PENDENTE.equals(parcelaModel.getPagamento().getIdStatus())
+						&& !STATUS_PARCELA_SUPERADA.equals(parcelaModel.getPagamento().getIdStatus())
+						&& !parcelaModel.isProcessadaSuper()) {
+
+					lancamentoPeriodoAberto.setValorSaldoParcelaPendente(
+							lancamentoPeriodoAberto.getValorSaldoParcelaPendente() + parcelaModel.getValor());
+					parcelaModel.setProcessadaSuper(true);
+					parcelaProcessada = true;
+
+				} else if (!STATUS_PARCELA_SUPERADA.equals(parcelaModel.getPagamento().getIdStatus())
+						&& !parcelaModel.isProcessada()) {
+
+					lancamentoPeriodoAberto
+							.setValorSaldo(lancamentoPeriodoAberto.getValorSaldo() + parcelaModel.getValor());
+					parcelaModel.setProcessada(true);
+					parcelaProcessada = true;
+
+				}
+
+				if (parcelaProcessada) {
+					pagamentoReportDAO.updateParcela(parcelaModel);
+				}
+
+			}
+
+		}
+
+		lancamentoPeriodoAberto.setValorSaldo(
+				lancamentoPeriodoAberto.getValorSaldo() - lancamentoPeriodoAberto.getValorLiquidoConsolidado());
+
+		lancamentoPeriodoAberto.setValorSaldoParcelaPendente(lancamentoPeriodoAberto.getValorSaldoParcelaPendente()
+				- lancamentoPeriodoAberto.getValorLiquidoConsolidado());
+
+	}
+
+	protected void processarPagamentoConsumo(LancamentoPeriodoModel lancamentoPeriodoModel) throws Exception {
+
+		if (lancamentoPeriodoModel.getValorSaldo() < 0 || lancamentoPeriodoModel.getValorSaldoParcelaPendente() < 0) {
+			PagamentoModel pagamento = new PagamentoModel();
+			pagamento.setNumeroContrato(lancamentoPeriodoModel.getIdContrato());
+			pagamento.setValorConsumo(lancamentoPeriodoModel.getValorLiquidoConsolidado());
+			pagamento.setValorSaldo(lancamentoPeriodoModel.getValorSaldo());
+			pagamento.setValorSaldoParcelaPendente(lancamentoPeriodoModel.getValorSaldoParcelaPendente());
+			pagamento.setIdReport(lancamentoPeriodoModel.getId());
+			pagamento.setDataPagamento(DateUtil.getDateAtual());
+			pagamento.setIdStatus(STATUS_PARCELA_PENDENTE);
+
+			if (lancamentoPeriodoModel.getValorSaldo() < 0) {
+				pagamento.setValorPagamento(lancamentoPeriodoModel.getValorSaldo() * -1);
+			} else {
+				pagamento.setValorPagamento(lancamentoPeriodoModel.getValorSaldoParcelaPendente() * -1);
+			}
+
+			logger.info("Gerando pagamento de consumo excedento para o contrato: "
+					+ lancamentoPeriodoModel.getIdContrato());
+			pagamentoReportDAO.savePagamento(pagamento);
+			logger.info("Pagamento de consumo excedento gerado com sucesso para o contrato: "
+					+ lancamentoPeriodoModel.getIdContrato());
+		}
+
+	}
+
+	protected void processarPagamentoParcela() throws Exception {
+
+		if (contrato.getGarantia().getListPeriodos() != null && !contrato.getGarantia().getListPeriodos().isEmpty()) {
+
+			for (PeriodoModel periodoModel : contrato.getGarantia().getListPeriodos()) {
+
+				if (periodoModel.getParcelas() != null && !periodoModel.getParcelas().isEmpty()) {
+
+					for (ParcelaModel parcelaModel : periodoModel.getParcelas()) {
+
+						PagamentoModel pagamentoModel = parcelaModel.getPagamento();
+
+						if (STATUS_PARCELA_PENDENTE.equals(pagamentoModel.getIdStatus())) {
+							Double valorConsumoExcedente = periodoModel.getLancamentoPeriodo().getValorSaldo() * -1;
+
+							if (valorConsumoExcedente >= parcelaModel.getValor()) {
+								LancamentoPeriodoModel lancamentoPeriodoModel = periodoModel.getLancamentoPeriodo();
+								pagamentoModel.setIdStatus(STATUS_PARCELA_SUPERADA);
+								pagamentoModel.setValorSaldo(lancamentoPeriodoModel.getValorSaldo());
+								pagamentoModel.setValorSaldoParcelaPendente(
+										lancamentoPeriodoModel.getValorSaldoParcelaPendente());
+								pagamentoReportDAO.updatePagamento(pagamentoModel);
+							}
+						}
+
+					}
+
+				}
+
+			}
+
+		}
+	}
+}

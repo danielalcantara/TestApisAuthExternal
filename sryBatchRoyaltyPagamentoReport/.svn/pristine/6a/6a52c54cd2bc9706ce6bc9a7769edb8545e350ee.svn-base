@@ -1,0 +1,31 @@
+package br.com.cea.bo.impl;
+
+import java.util.Set;
+
+import br.com.cea.bo.ICalculoValoresParcelaBO;
+import br.com.cea.model.ConsumoModel;
+import br.com.cea.model.PagamentoModel;
+import br.com.cea.model.LancamentoPedidoModel;
+import br.com.cea.model.LancamentoPeriodoModel;
+
+public class CalculoValoresParcelaTipo1BO implements ICalculoValoresParcelaBO {
+
+	@Override
+	public LancamentoPedidoModel calculoConsumoPorPedido(Set<ConsumoModel> listConsumo) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public LancamentoPeriodoModel calculoConsumoPorPeriodo(Set<ConsumoModel> listConsumo) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public PagamentoModel calculoPagamento(Set<ConsumoModel> listConsumo) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+}

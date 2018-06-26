@@ -1,0 +1,142 @@
+package br.com.cea.dao;
+
+import java.util.Set;
+
+import br.com.cea.model.ConsumoModel;
+import br.com.cea.model.ContratoModel;
+import br.com.cea.model.GarantiaModel;
+import br.com.cea.model.LancamentoPedidoModel;
+import br.com.cea.model.LancamentoPeriodoModel;
+import br.com.cea.model.PagamentoModel;
+import br.com.cea.model.ParcelaModel;
+import br.com.cea.model.PedidoSkuModel;
+import br.com.cea.model.PeriodoModel;
+import br.com.cea.util.DateUtil;
+
+public class PagamentoReportDAO extends GenericDAO implements IPagamentoReportDAO {
+
+	public void savePagamento(PagamentoModel pagamentoModel) throws Exception {
+
+		Long idPagamento = getIdPagamento();
+
+		pagamentoModel.setId(idPagamento);
+		pagamentoModel.setDataInclusaoRegistro(DateUtil.getDateAtual());
+
+		jdbcTemplate.update(env.getProperty("INSERT_TABLE_PAGAMENTO"),
+				new Object[] { pagamentoModel.getId(), pagamentoModel.getNumeroContrato(),
+						pagamentoModel.getValorConsumo(), pagamentoModel.getValorParcela(),
+						pagamentoModel.getValorPagamento(), pagamentoModel.getValorSaldo(),
+						pagamentoModel.getDataInclusaoRegistro(), pagamentoModel.getIdTabelaReport(),
+						pagamentoModel.getNumeroContratoParcela(), pagamentoModel.getNumeroSequencialGarantia(),
+						pagamentoModel.getNumeroContratoParcela() });
+
+	}
+
+	private Long getIdPagamento() {
+		return super.getId(env.getProperty("GET_ID_PAGAMENTO"));
+	}
+
+	@Override
+	public void saveLancamentoPedido(LancamentoPedidoModel lancamentoPedido) throws Exception {
+		Long idPedido = getIdPedido();
+
+		lancamentoPedido.setId(idPedido);
+		lancamentoPedido.setDataInclusaoRegistro(DateUtil.getDateAtual());
+
+		jdbcTemplate.update(env.getProperty("INSERT_TABLE_CONSOLIDA_PEDIDO"),
+				new Object[] { lancamentoPedido.getId(), lancamentoPedido.getDataRecebementoDevolucaoItem(),
+						lancamentoPedido.getValorBruto(), lancamentoPedido.getValorLiquido(),
+						lancamentoPedido.getCodigoDivisao(), lancamentoPedido.getCodigoDepartamento(),
+						lancamentoPedido.getDataGeracaoArquivo(), lancamentoPedido.getDataVencimentoArquivoSap(),
+						lancamentoPedido.getNumeroAtributoUsuario(), lancamentoPedido.getCodigoValorAtbUsuario(),
+						lancamentoPedido.getDataInclusaoRegistro() });
+
+		savePedidoSku(lancamentoPedido);
+
+	}
+
+	private void savePedidoSku(LancamentoPedidoModel lancamentoPedido) throws Exception {
+		Long idPedido = lancamentoPedido.getId();
+		for (PedidoSkuModel list : lancamentoPedido.getListaPedidoSku()) {
+			jdbcTemplate.update(env.getProperty("INSERT_TABLE_PEDIDO_SKU"),
+					new Object[] { idPedido, list.getCodigoFornecedor(), list.getNuNfItem(), list.getDataEmsNf(),
+							list.getCdItem(), list.getNiLocEtg() });
+		}
+	}
+
+	private Long getIdPedido() {
+		return super.getId(env.getProperty("GET_ID_PEDIDO"));
+	}
+
+	@Override
+	public void saveLancamentoPeriodo(LancamentoPeriodoModel lancamentoPeriodo) throws Exception {
+		Long idReport = getIdReport();
+
+		lancamentoPeriodo.setId(idReport);
+		lancamentoPeriodo.setDataInclusaoRegistro(DateUtil.getDateAtual());
+		lancamentoPeriodo.setDataAlteracaoRegistro(DateUtil.getDateAtual());
+
+		jdbcTemplate.update(env.getProperty("INSERT_TABLE_CONSOLIDA_PERIODO"),
+				new Object[] { lancamentoPeriodo.getId(), lancamentoPeriodo.getIdContrato(),
+						lancamentoPeriodo.getValorBrutoConsolidado(), lancamentoPeriodo.getValorLiquidoConsolidado(),
+						lancamentoPeriodo.getDataAlteracaoRegistro(), lancamentoPeriodo.getCodigoPeriodicidade(),
+						lancamentoPeriodo.getDataInicioReport(), lancamentoPeriodo.getDataFimReport(),
+						lancamentoPeriodo.getDataInclusaoRegistro(), lancamentoPeriodo.getStatusReport() });
+
+		savePedidoPeriodo(lancamentoPeriodo);
+	}
+
+	private void savePedidoPeriodo(LancamentoPeriodoModel lancamentoPeriodo) throws Exception {
+		Long idPeriodo = lancamentoPeriodo.getId();
+		for (LancamentoPedidoModel list : lancamentoPeriodo.getLancamentosPedido()) {
+			jdbcTemplate.update(env.getProperty("INSERT_TABLE_PEDIDO_PERIODO"),
+					new Object[] { idPeriodo, list.getId() });
+		}
+	}
+
+	private Long getIdReport() {
+		return super.getId(env.getProperty("GET_ID_REPORT"));
+	}
+
+	@Override
+	public GarantiaModel fetchGarantia(Long idConttato) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ContratoModel fetchContrato(Long idContrato) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<PeriodoModel> fetchPeriodos(Long idGarantia) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<ParcelaModel> fetchParcelas(Long idPeriodo) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public LancamentoPeriodoModel fetchLancamentoPeriodo(Long idContrato) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public LancamentoPeriodoModel fetchLancamentoPeriodoAberto(Long idContrato) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<ConsumoModel> fetchConsumos() throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+}

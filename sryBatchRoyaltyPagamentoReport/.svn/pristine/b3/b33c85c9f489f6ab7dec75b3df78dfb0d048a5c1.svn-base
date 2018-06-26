@@ -1,0 +1,72 @@
+package br.com.cea.bo.impl;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Iterator;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import br.com.cea.bo.IProcessarPagamentoReportBO;
+import br.com.cea.dao.IPagamentoReportDAO;
+import br.com.cea.model.ContratoModel;
+import br.com.cea.model.LancamentoPedidoModel;
+import br.com.cea.model.LancamentoPeriodoModel;
+import br.com.cea.model.PagamentoModel;
+import br.com.cea.model.PeriodoModel;
+import br.com.cea.util.DateUtil;
+
+public class ProcessarPagamentoReportGMPUI implements IProcessarPagamentoReportBO {
+
+	@Autowired
+	private IPagamentoReportDAO pagamentoReportDAO;
+
+	@Override
+	public LancamentoPeriodoModel processarReport(ContratoModel contrato) throws Exception {
+		LancamentoPeriodoModel lancamentoPeriodoModel = pagamentoReportDAO.fetchLancamentoPeriodo(contrato.getId());
+
+		if (lancamentoPeriodoModel == null) {
+			Iterator<PeriodoModel> iterPeriodo = contrato.getGarantia().getListPeriodos().iterator();
+
+			if (!iterPeriodo.hasNext())
+				return null;
+
+			PeriodoModel periodoModel = iterPeriodo.next();
+			Date dataFim = DateUtil.nextDateByMonth(periodoModel.getDataInicio(), contrato.getPeriodicidade());
+			lancamentoPeriodoModel = new LancamentoPeriodoModel();
+			lancamentoPeriodoModel.setDataInicioReport(periodoModel.getDataInicio());
+			lancamentoPeriodoModel.setDataFimReport(dataFim);
+		}
+
+		for (LancamentoPedidoModel lancamentoPedidoModel : contrato.getLancamentoPeriodo().getLancamentosPedido()) {
+			lancamentoPeriodoModel
+					.setValorBrutoConsolidado(lancamentoPeriodoModel.getValorBrutoConsolidado() + lancamentoPedidoModel.getValorBruto());
+			lancamentoPeriodoModel.setValorLiquidoConsolidado(
+					lancamentoPeriodoModel.getValorLiquidoConsolidado() + lancamentoPedidoModel.getValorLiquido());
+		}
+		
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		Date dataAtual = cal.getTime();
+		cal.setTime(lancamentoPeriodoModel.getDataFimReport());
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		
+		if (dataAtual.compareTo(cal.getTime()) == 0) {
+			pagamentoReportDAO.saveLancamentoPeriodo(lancamentoPeriodoModel);
+		}
+
+		return null;
+	}
+
+	@Override
+	public PagamentoModel processarPagamento(ContratoModel contrato) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

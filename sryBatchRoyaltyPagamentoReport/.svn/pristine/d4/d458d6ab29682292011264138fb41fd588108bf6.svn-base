@@ -1,0 +1,159 @@
+#####################################################################################################################################
+# Royalty Project
+# Queries for sryBatchRoyaltyPagamentoReport 
+# Author: Daniel Alcântara
+# Date: 05/10/2017 - 13:00:00 
+#####################################################################################################################################
+					
+SELECT_VIEW_REC_DEV = SELECT * FROM RY001V_GAR_MIN_PAR_UNI_INI
+
+#####################################################################################################################################
+# Select na tabela de garantias
+#####################################################################################################################################
+SELECT_TABLE_GARANTIA = SELECT NI_CTO_RTY, DT_CLC_GRT_CTO, VL_SLD_GRT_CTO, VL_SLD_GRT_CTO_HIS, VL_SLD_GRT_CTO_HIS, GRT.CD_TPO_GRT \
+						AS CD_TPO_GRT, DSC_TPO_GRT, NM_CLS_NGC FROM ADMRY.RY006T_CTR_GRT_CTO GRT INNER JOIN ADMRY.RY031T_TPO_GRT_MNA \
+						TIPO_GRT ON GRT.CD_TPO_GRT = TIPO_GRT.CD_TPO_GRT WHERE NI_CTO_RTY = ?
+
+#####################################################################################################################################
+# Select na tabela de detalhe de garantia
+#####################################################################################################################################
+SELECT_TABLE_PERIODO = SELECT \
+NI_SEQ_GRT, NI_CTO_RTY, to_date( '01/'||to_char(DT_INI_PRZ_PAG_PAR_GRT, 'MM/YYYY') , 'DD/MM/YYYY') AS DT_INI_PRZ_PAG_PAR_GRT, DT_FIM_PRZ_PAG_PAR_GRT, \
+VL_PAR_GRT_CTO_RTY, CD_USR_RPO_ATLZ_REG, DT_ATLZ_REG \
+FROM ADMRY.RY007T_DET_GRT_CTO_RTY WHERE NI_CTO_RTY = ?
+
+#####################################################################################################################################
+# Select na tabela de parcelas
+#####################################################################################################################################
+SELECT_TABLE_PARCELAS = SELECT * FROM ADMRY.RY026T_PAR_GRT_CTO_RTY RY26 INNER JOIN ADMRY.RY025T_PAG_GRT_CTO_RTY RY25 \
+						ON (RY26.NI_SEQ_PAR = RY25.NI_SEQ_PAR AND RY26.NI_SEQ_GRT = RY25.NI_SEQ_GRT AND RY25.NI_CTO_PAR = RY26.NI_CTO_RTY) \
+						INNER JOIN RY032T_ST_PGT_CTO_RTY RY32 ON (RY25.CD_ST_PGT = RY32.CD_ST_PGT) \
+						WHERE RY26.NI_CTO_RTY = ? AND RY26.NI_SEQ_GRT = ?
+
+#####################################################################################################################################
+# Select na tabela de contratos
+#####################################################################################################################################
+SELECT_TABLE_CONTRATO = SELECT * FROM ADMRY.RY004T_CTO_RTY WHERE NI_CTO_RTY = ?
+
+#####################################################################################################################################
+# Select na tabela que relaciona os pedidos por sku
+# Selecionar os lançamentos a partir de um pedido. Pois, um pedido terá 1 ou mais sku's
+#####################################################################################################################################
+SELECT_TABLE_PEDIDO_SKU = SELECT * FROM ADMRY.RY028T_LCN_CNS_PDO_SKU WHERE NI_LCT_CNS_PDO = ?
+
+#####################################################################################################################################
+# Insert na tabela que relaciona os pedidos por sku
+# Inserir na tabela que relaciona os pedidos por sku todos os SKU's que representam o pedido
+#####################################################################################################################################
+INSERT_TABLE_PEDIDO_SKU = INSERT INTO ADMRY.RY028T_LCN_CNS_PDO_SKU (NI_LCT_CNS_PDO, CD_FOR, NU_NF_ITEM, DT_EMS_NF, CD_ITEM, NI_LOC_ETG) \
+                VALUES (?, ?, ?, ?, ?, ?)
+                
+#####################################################################################################################################
+# Insert na tabela de registros consolidadados por pedido
+#####################################################################################################################################
+INSERT_LANCAMENTO_PEDIDO = INSERT INTO RY029T_LCN_CNS_PDO_SAP (\
+                NI_LCT_CNS_PDO, dt_fnz_rec_item, vl_brt_dirt_autl_rec_item, vl_liq_dirt_autl_rec_item, cd_div, \
+                cd_dpt, dt_ger_arq_sap, dt_vct_arq_sap, ni_atb_defd_usr, cd_vlr_atb_defd_usr, ts_inc_reg, ni_cto_rty) \
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                
+GET_ID_PEDIDO = SELECT ADMRY.RY029S.NEXTVAL FROM dual
+
+#####################################################################################################################################
+# Select na tabela de pedido
+# Seleciona todos os pedidos relacionados a um periodo
+#####################################################################################################################################
+SELECT_TABLE_PEDIDO_SAP = SELECT * FROM admry.RY029T_LCN_CNS_PDO_SAP PDO WHERE EXISTS (\
+                          SELECT 1 FROM ADMRY.RY030T_LNC_CNS_AGR_PER_PDO PE \
+                          WHERE PE.NI_LCT_CNS_PDO = PDO.NI_LCT_CNS_PDO \
+                          AND PE.NI_SEQ_LCT_AGR = ? )
+ 
+#####################################################################################################################################
+# Select na tabela que relaciona os pedidos por periodo
+# Selecionar os lançamentos a partir de um lançamento consolidado por periodo
+#####################################################################################################################################
+SELECT_TABLE_PEDIDO_PERIODO = SELECT * FROM RY030T_LNC_CNS_AGR_PER_PDO WHERE NI_SEQ_LCT_AGR = ?
+
+#####################################################################################################################################
+# Select na tabela que relaciona os pedidos por periodo
+# Inserir na tabela que relaciona os pedidos por periodo todos os pedidos que representam um agrupamento de períodos
+#####################################################################################################################################
+INSERT_TABLE_PEDIDO_PERIODO = INSERT INTO RY030T_LNC_CNS_AGR_PER_PDO (NI_SEQ_LCT_AGR, NI_LCT_CNS_PDO) \
+               VALUES (?, ?)
+               
+#####################################################################################################################################
+# Select na tabela com lançamentos agrupados por períodos
+# Seleciona os lançamentos que existe agrupamente, que a data final de report seja maior que sysdate e percetença ao contrato corrente
+#####################################################################################################################################
+SELECT_LANCAMENTO_PERIODO_ABERTO = SELECT * FROM ADMRY.RY024T_LCN_CNS_AGR_PER PER \
+               WHERE (ST_RPT = 'A' OR ST_RPT IS NULL) AND NI_CTO_RTY = :idContrato AND NI_SEQ_GRT = :idPeriodo ORDER BY NI_CTO_RTY, NI_SEQ_GRT, DT_INI_RPT \
+               
+SELECT_LANCAMENTOS_PERIODO_ABERTO = SELECT * FROM ADMRY.RY024T_LCN_CNS_AGR_PER PER \
+               WHERE (ST_RPT = 'A' OR ST_RPT IS NULL) ORDER BY NI_CTO_RTY, NI_SEQ_GRT, DT_INI_RPT \
+               
+#####################################################################################################################################
+# Select na tabela com lançamentos agrupados por períodos
+# Seleciona os lançamentos que existe agrupamente, que a data final de report seja maior que sysdate e percetença ao contrato corrente
+#####################################################################################################################################
+SELECT_LANCAMENTO_PERIODO = SELECT * FROM ADMRY.RY024T_LCN_CNS_AGR_PER PER WHERE NI_CTO_RTY = :idContrato AND NI_SEQ_GRT = :idPeriodo ORDER BY NI_CTO_RTY, \
+					 	 NI_SEQ_GRT, DT_INI_RPT \
+						
+SELECT_LANCAMENTO_PERIODO_POR_DATA_INICIO = SELECT * FROM ADMRY.RY024T_LCN_CNS_AGR_PER PER WHERE NI_CTO_RTY = :idContrato AND NI_SEQ_GRT = :idPeriodo \
+					AND DT_INI_RPT = :dataInicioReport ORDER BY NI_CTO_RTY, NI_SEQ_GRT, DT_INI_RPT \
+               
+#####################################################################################################################################
+# Select na tabela com lançamentos agrupados por períodos
+# Seleciona os lancamentos consolidados por periodo baseado no numero do contrato no periodo
+#####################################################################################################################################
+SELECT_TABLE_CONSOLIDA_PERIODO_PERIODO = SELECT * FROM ADMRY.RY024T_LCN_CNS_AGR_PER PER WHERE \
+                                         NI_CTO_RTY = ? AND NI_SEQ_LCT_GRT = ?   
+                                                     
+#####################################################################################################################################
+# Update na tabela com lançamentos agrupados por períodos
+#####################################################################################################################################               
+UPDATE_LANCAMENTO_PERIODO = UPDATE ADMRY.RY024T_LCN_CNS_AGR_PER SET \
+                                     NI_CTO_RTY = ?,     \
+                                     VL_DA_BRT_CNS = ?,  \
+                                     VL_DA_LIQ_CNS = ?,  \
+                                     DT_ALT_REG_GRT = ?, \
+                                     CD_PER_REP_RTY = ?, \
+                                     DT_INI_RPT = ?,     \
+                                     DT_FIM_RPT = ?,     \
+                                     ST_RPT = ?,         \
+                                     VLR_SLD_PCL_PGA = ?,      \
+                                     VLR_SLD_PCL_NAO_PGA = ? \
+                                   WHERE NI_SEQ_LCT_AGR = ?
+               
+#####################################################################################################################################
+# Insert na tabela com lançamentos agrupados por períodos
+# Insere um lançamento agrupado por período
+#####################################################################################################################################
+INSERT_LANCAMENTO_PERIODO = INSERT INTO ADMRY.RY024T_LCN_CNS_AGR_PER (NI_SEQ_LCT_AGR, NI_CTO_RTY, VL_DA_BRT_CNS, VL_DA_LIQ_CNS, \
+               DT_ALT_REG_GRT, CD_PER_REP_RTY, DT_INI_RPT, DT_FIM_RPT, TS_INC_REG, ST_RPT, NI_SEQ_GRT, VLR_SLD_PCL_PGA, VLR_SLD_PCL_NAO_PGA) \
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+               
+GET_ID_REPORT = SELECT ADMRY.RY024S.NEXTVAL FROM dual
+               
+#####################################################################################################################################
+# Insert na tabela de lançamentos de pagamentos
+# Insere um lançamento de pagamentos de parcela ou um lançamento de pagamento de valor de consumo excedente
+#####################################################################################################################################               
+INSERT_PAGAMENTO = INSERT INTO ADMRY.RY025T_PAG_GRT_CTO_RTY (NI_SEQ_PGT, NI_CTO_RTY, DT_LCN_PGT, VLR_CNS_GRT, VLR_PGT_PCL, \
+               VLR_TTL_PGO, DT_INC_REG_GRT, NI_SEQ_LCN_AGR_PER, NI_SEQ_PAR, NI_SEQ_GRT, NI_CTO_PAR, VLR_SLD_PCL_PGA, VLR_SLD_PCL_NAO_PGA, \
+               ST_PRO_PAR, ST_PRO_PAR_ST, CD_ST_PGT) \
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+               
+UPDATE_PAGAMENTO = UPDATE ADMRY.RY025T_PAG_GRT_CTO_RTY SET NI_CTO_RTY = ?, NI_SEQ_LCN_AGR_PER = ?, NI_SEQ_PAR = ?, NI_SEQ_GRT = ?, \
+				NI_CTO_PAR = ?, DT_LCN_PGT = ?, VLR_CNS_GRT = ?, VLR_PGT_PCL = ?, VLR_TTL_PGO = ?, VLR_SLD_PCL_PGA = ?, \
+				VLR_SLD_PCL_NAO_PGA = ?, CD_ST_PGT = ?, DT_APR_GES = ?, DT_ETM_PGT = ?, DT_ALT_ST = ?, ST_PRO_PAR = ?, \
+				ST_PRO_PAR_ST = ? WHERE NI_SEQ_PGT = ?
+               
+GET_ID_PAGAMENTO = SELECT ADMRY.RY025S.NEXTVAL FROM dual
+
+GET_TIPO_GARANTIA = SELECT * FROM ADMRY.RY031T_TPO_GRT_MNA
+
+UPDATE_PARCELA = UPDATE ADMRY.RY026T_PAR_GRT_CTO_RTY SET DT_PGT_GRT = ?, VL_PAR_GRT = ?, DT_ATLZ_REG \
+				= ?, ST_PRO_PAR = ?, ST_PRO_PAR_SUP = ? WHERE NI_SEQ_PAR = ? AND NI_SEQ_GRT = ? AND NI_CTO_RTY = ?
+					 		
+SELECT_PAGAMENTO_CONSUMO = SELECT * FROM ADMRY.RY025T_PAG_GRT_CTO_RTY PAG \
+			INNER JOIN ADMRY.RY032T_ST_PGT_CTO_RTY ST_PAG ON (PAG.CD_ST_PGT = ST_PAG.CD_ST_PGT) \
+			WHERE NI_SEQ_LCN_AGR_PER = ?

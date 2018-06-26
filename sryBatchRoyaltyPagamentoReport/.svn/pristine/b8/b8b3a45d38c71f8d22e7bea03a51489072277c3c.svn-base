@@ -1,0 +1,29 @@
+package br.com.cea.repository.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import br.com.cea.dao.IPagamentoReportDAO;
+import br.com.cea.model.GarantiaModel;
+import br.com.cea.model.PagamentoModel;
+import br.com.cea.repository.IPagamentoReportRepository;
+
+@Component
+public class PagamentoReportRepository implements IPagamentoReportRepository {
+
+	@Autowired
+	private IPagamentoReportDAO pagamentoRepositoryDAO;
+
+	@Override
+	public List<GarantiaModel> buscarGarantia(Integer idConttato) throws Exception {
+		return pagamentoRepositoryDAO.buscarGarantia(idConttato);
+	}
+
+	@Override
+	public Integer salvarPagamento(PagamentoModel pagamentoModel) throws Exception {
+		return pagamentoRepositoryDAO.salvarPagamento(pagamentoModel);
+	}
+
+}

@@ -1,0 +1,17 @@
+package br.com.cea.processar;
+
+import org.springframework.stereotype.Component;
+
+import br.com.cea.bo.IPagamentoReportBO;
+
+@Component
+public class ProcessarPagamentoReport {
+
+	private IPagamentoReportBO bo;
+	
+	public void processar() {
+		
+		bo.processPagamentoReport();
+		
+	}
+}

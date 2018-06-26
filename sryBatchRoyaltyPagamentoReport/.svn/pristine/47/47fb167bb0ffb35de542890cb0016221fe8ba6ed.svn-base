@@ -1,0 +1,33 @@
+package br.com.cea.util;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+public class DateUtil {
+
+	public static Date converterStringToDate(final String date) throws ParseException {
+		String dt = date;
+		Date data = null;
+		java.sql.Date dataSql = null;
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		try {
+			data = dateFormat.parse(dt);
+			dataSql = new java.sql.Date(data.getTime());
+		} catch (ParseException e) {
+			throw new ParseException("Falha ao tentar converter a data [" + date + "] "+e.getMessage(), 0);
+		}
+		
+		return dataSql;
+	}
+	
+	public static Date nextDateByMonth(Date dateBase, Integer amountMonth) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(dateBase);
+		cal.add(Calendar.MONTH, amountMonth);
+		
+		return cal.getTime();
+	}
+
+}

@@ -1,0 +1,22 @@
+package br.com.cea.factory;
+
+import br.com.cea.bo.IProcessarPagamentoReportBO;
+
+public abstract class ProcessarPagamentoReportFactory {
+
+	public static IProcessarPagamentoReportBO getProcessarPagamentoReport(String nomeCalsseNegocio)
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+
+		IProcessarPagamentoReportBO processarPagamentoReportBO = null;
+		final String prefixNameClass = "br.com.cea.bo.impl.";
+
+		if (nomeCalsseNegocio == null)
+			return null;
+
+		processarPagamentoReportBO = (IProcessarPagamentoReportBO) Class.forName(prefixNameClass + nomeCalsseNegocio)
+				.newInstance();
+
+		return processarPagamentoReportBO;
+	}
+
+}

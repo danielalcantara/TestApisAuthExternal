@@ -1,0 +1,13 @@
+package br.com.cea.bo;
+
+import br.com.cea.model.ContratoModel;
+import br.com.cea.model.LancamentoPeriodoModel;
+import br.com.cea.model.PagamentoModel;
+
+public interface IProcessarPagamentoReportBO {
+	
+	public LancamentoPeriodoModel processarReport(ContratoModel contrato) throws Exception;
+	
+	public PagamentoModel processarPagamento(ContratoModel contrato);
+	
+}

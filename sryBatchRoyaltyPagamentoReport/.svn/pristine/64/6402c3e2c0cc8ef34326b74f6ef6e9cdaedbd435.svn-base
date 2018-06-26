@@ -1,0 +1,18 @@
+package br.com.cea.bo;
+
+import java.util.Set;
+
+import br.com.cea.model.ConsumoModel;
+import br.com.cea.model.PagamentoModel;
+import br.com.cea.model.LancamentoPedidoModel;
+import br.com.cea.model.LancamentoPeriodoModel;
+
+public interface ICalculoValoresParcelaBO {
+	
+	public LancamentoPedidoModel calculoConsumoPorPedido(Set<ConsumoModel> listConsumo);
+	
+	public LancamentoPeriodoModel calculoConsumoPorPeriodo(Set<ConsumoModel> listConsumo);
+	
+	public PagamentoModel calculoPagamento(Set<ConsumoModel> listConsumo);
+	
+}

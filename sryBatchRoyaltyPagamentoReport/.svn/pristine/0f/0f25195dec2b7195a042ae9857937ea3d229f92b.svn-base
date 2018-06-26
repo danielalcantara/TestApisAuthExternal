@@ -1,0 +1,96 @@
+package br.com.cea.model;
+
+import java.io.Serializable;
+import java.util.Date;
+
+public class LancamentoPedidoModel implements Serializable {
+
+	private static final long serialVersionUID = -416906795713533227L;
+
+	private Long id;
+	private Long idContrato;
+	private Double valorLiquido;
+	private Double valorBruto;
+	private Long cdFor;
+	private String nuNfItem;
+	private Date dataEmsNf;
+	private String cdItem;
+	private Long niLocEtg;
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Long getIdContrato() {
+		return idContrato;
+	}
+
+	public void setIdContrato(Long idContrato) {
+		this.idContrato = idContrato;
+	}
+
+	public Double getValorLiquido() {
+		return valorLiquido;
+	}
+
+	public void setValorLiquido(Double valorLiquido) {
+		this.valorLiquido = valorLiquido;
+	}
+
+	public Double getValorBruto() {
+		return valorBruto;
+	}
+
+	public void setValorBruto(Double valorBruto) {
+		this.valorBruto = valorBruto;
+	}
+
+	public Long getCdFor() {
+		return cdFor;
+	}
+
+	public void setCdFor(Long cdFor) {
+		this.cdFor = cdFor;
+	}
+
+	public String getNuNfItem() {
+		return nuNfItem;
+	}
+
+	public void setNuNfItem(String nuNfItem) {
+		this.nuNfItem = nuNfItem;
+	}
+
+	public Date getDataEmsNf() {
+		return dataEmsNf;
+	}
+
+	public void setDataEmsNf(Date dataEmsNf) {
+		this.dataEmsNf = dataEmsNf;
+	}
+
+	public String getCdItem() {
+		return cdItem;
+	}
+
+	public void setCdItem(String cdItem) {
+		this.cdItem = cdItem;
+	}
+
+	public Long getNiLocEtg() {
+		return niLocEtg;
+	}
+
+	public void setNiLocEtg(Long niLocEtg) {
+		this.niLocEtg = niLocEtg;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
+}

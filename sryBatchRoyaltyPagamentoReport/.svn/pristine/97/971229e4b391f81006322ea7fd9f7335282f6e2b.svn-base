@@ -1,0 +1,37 @@
+package br.com.cea.app;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+
+import br.com.cea.config.BeanConfiguration;
+import br.com.cea.processar.ProcessarPagamentoReport;
+
+@Configuration
+@ComponentScan
+public class App {
+
+	private static Logger logger = LogManager.getLogger();
+	
+	public static void main(String[] args) {
+
+		ConfigurableApplicationContext ctx = null;
+		
+		SpringApplication app = new SpringApplication(BeanConfiguration.class);
+		ctx = app.run(args);
+		
+		logger.info("====================== VERSAO: 1.0.0 - 23/10/2017");
+		logger.info("====================== PROCESSO DE NEGOCIO INICIADO!");
+		
+		ProcessarPagamentoReport cto = (ProcessarPagamentoReport) ctx.getBean(ProcessarPagamentoReport.class);
+		cto.processar();
+		
+		logger.info("====================== PROCESSO DE NEGOCIO FINALIZADO!");
+		
+		System.exit(0);
+	}
+
+}

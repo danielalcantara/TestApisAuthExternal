@@ -1,0 +1,84 @@
+package br.com.cea.model;
+
+import java.io.Serializable;
+import java.util.Date;
+
+public class ReportModel implements Serializable{
+
+	private static final long serialVersionUID = -1592046924941877544L;
+	
+	private Long id;
+	private Long numeroContrato;
+	private Double valorBrutoConsolidado;
+	private Double valorLiquidoConsolidado;
+	private Date dataAlteracaoRegistro;
+	private Integer codigoPercentual;
+	private Date dataInicioReport;
+	private Date dataFimReport;
+	private Date dataInclusaoRegistro;
+	private String statusReport;
+	
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
+	public Long getNumeroContrato() {
+		return numeroContrato;
+	}
+	public void setNumeroContrato(Long numeroContrato) {
+		this.numeroContrato = numeroContrato;
+	}
+	public Double getValorBrutoConsolidado() {
+		return valorBrutoConsolidado;
+	}
+	public void setValorBrutoConsolidado(Double valorBrutoConsolidado) {
+		this.valorBrutoConsolidado = valorBrutoConsolidado;
+	}
+	public Double getValorLiquidoConsolidado() {
+		return valorLiquidoConsolidado;
+	}
+	public void setValorLiquidoConsolidado(Double valorLiquidoConsolidado) {
+		this.valorLiquidoConsolidado = valorLiquidoConsolidado;
+	}
+	public Date getDataAlteracaoRegistro() {
+		return dataAlteracaoRegistro;
+	}
+	public void setDataAlteracaoRegistro(Date dataAlteracaoRegistro) {
+		this.dataAlteracaoRegistro = dataAlteracaoRegistro;
+	}
+	public Integer getCodigoPercentual() {
+		return codigoPercentual;
+	}
+	public void setCodigoPercentual(Integer codigoPercentual) {
+		this.codigoPercentual = codigoPercentual;
+	}
+	public Date getDataInicioReport() {
+		return dataInicioReport;
+	}
+	public void setDataInicioReport(Date dataInicioReport) {
+		this.dataInicioReport = dataInicioReport;
+	}
+	public Date getDataFimReport() {
+		return dataFimReport;
+	}
+	public void setDataFimReport(Date dataFimReport) {
+		this.dataFimReport = dataFimReport;
+	}
+	public Date getDataInclusaoRegistro() {
+		return dataInclusaoRegistro;
+	}
+	public void setDataInclusaoRegistro(Date dataInclusaoRegistro) {
+		this.dataInclusaoRegistro = dataInclusaoRegistro;
+	}
+	public String getStatusReport() {
+		return statusReport;
+	}
+	public void setStatusReport(String statusReport) {
+		this.statusReport = statusReport;
+	}
+	
+	
+
+}

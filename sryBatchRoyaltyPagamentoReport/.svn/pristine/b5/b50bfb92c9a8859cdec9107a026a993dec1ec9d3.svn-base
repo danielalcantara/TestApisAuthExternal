@@ -1,0 +1,12 @@
+#####################################################################################################################################
+# TPMS Project
+# Product Queries for sryBatchRoyaltyPagamentoReport 
+# Author: Daniel Alcântara
+# Date: 05/10/2017 - 13:00:00 
+#####################################################################################################################################
+
+GET_ID_PAGAMENTO = SELECT ADMTP.TP089SQ.NEXTVAL FROM dual
+
+INSERT_PAGAMENTO_QUERY = INSERT INTO ADMRY.RY025T_PAG_GRT_CTO_RTY (NI_SEQ_PGT, NI_CTO_RTY, DT_LCN_PGT, VLR_CNS_GRT, \
+					VLR_PGT_PCL, VLR_SLD, VLR_TTL_PGO, DT_INC_REG_GRT, NI_SEQ_LCN_AGR_PER) VALUES (?, ?, ?, ?, ?, ?, ?,\
+					?, ?)

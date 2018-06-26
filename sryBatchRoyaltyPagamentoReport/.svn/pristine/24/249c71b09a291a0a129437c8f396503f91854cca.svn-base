@@ -1,0 +1,25 @@
+package br.com.cea.factory;
+
+import br.com.cea.bo.IProcessarPagamentoReportBO;
+import br.com.cea.dao.IPagamentoReportDAO;
+
+public abstract class ProcessarPagamentoReportFactory {
+
+	public static IProcessarPagamentoReportBO getProcessarPagamentoReport(String className,
+			IPagamentoReportDAO pagamentoReportDAO)
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+
+		IProcessarPagamentoReportBO processarPagamentoReportBO = null;
+		final String prefixNameClass = "br.com.cea.bo.impl.";
+
+		if (className == null || className.trim().isEmpty())
+			return null;
+
+		processarPagamentoReportBO = (IProcessarPagamentoReportBO) Class.forName(prefixNameClass + className.trim())
+				.newInstance();
+		processarPagamentoReportBO.setPagamentoReportDAO(pagamentoReportDAO);
+
+		return processarPagamentoReportBO;
+	}
+
+}

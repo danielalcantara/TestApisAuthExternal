@@ -1,0 +1,16 @@
+package br.com.cea.bo;
+
+import br.com.cea.dao.IPagamentoReportDAO;
+import br.com.cea.model.ContratoModel;
+
+public interface IProcessarPagamentoReportBO {
+	
+	public void processarReport() throws Exception;
+	
+	public void processarPagamentoParcela() throws Exception;
+	
+	public void setContrato(ContratoModel contratoModel);
+	
+	public void setPagamentoReportDAO(IPagamentoReportDAO pagamentoReportDAO);
+	
+}

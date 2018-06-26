@@ -1,0 +1,53 @@
+package br.com.cea.model;
+
+import java.util.Date;
+
+public class ContratoModel {
+
+	private Date dataInicio;
+	private Date dataFim;
+	private String tipoGarantia;
+	private Integer periodicidade;
+	private GarantiaModel garantia;
+
+	public Date getDataInicio() {
+		return dataInicio;
+	}
+
+	public void setDataInicio(Date dataInicio) {
+		this.dataInicio = dataInicio;
+	}
+
+	public Date getDataFim() {
+		return dataFim;
+	}
+
+	public void setDataFim(Date dataFim) {
+		this.dataFim = dataFim;
+	}
+
+	public String getTipoGarantia() {
+		return tipoGarantia;
+	}
+
+	public void setTipoGarantia(String tipoGarantia) {
+		this.tipoGarantia = tipoGarantia;
+	}
+
+	public Integer getPeriodicidade() {
+		return periodicidade;
+	}
+
+	public void setPeriodicidade(Integer periodicidade) {
+		this.periodicidade = periodicidade;
+	}
+
+	public GarantiaModel getGarantia() {
+		return garantia;
+	}
+
+	public void setGarantia(GarantiaModel garantia) {
+		this.garantia = garantia;
+	}
+
+}

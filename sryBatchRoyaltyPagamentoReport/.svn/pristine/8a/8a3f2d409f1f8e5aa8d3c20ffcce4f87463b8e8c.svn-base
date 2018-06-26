@@ -1,0 +1,100 @@
+package br.com.cea.dao;
+
+import java.util.Set;
+
+import br.com.cea.model.ContratoModel;
+import br.com.cea.model.GarantiaModel;
+import br.com.cea.model.LancamentoPedidoModel;
+import br.com.cea.model.LancamentoPeriodoModel;
+import br.com.cea.model.PagamentoModel;
+import br.com.cea.model.PagamentoReport;
+import br.com.cea.model.ParcelaModel;
+import br.com.cea.model.PeriodoModel;
+import br.com.cea.util.DateUtil;
+
+public class PagamentoReportDAO extends GenericDAO implements IPagamentoReportDAO {
+
+	public void savePagamento(PagamentoModel pagamentoModel) throws Exception {
+
+		Long idPagamento = getIdPagamento();
+
+		pagamentoModel.setId(idPagamento);
+		pagamentoModel.setDataInclusaoRegistro(DateUtil.getDateAtual());
+
+		jdbcTemplate.update(env.getProperty("INSERT_TABLE_PAGAMENTO"),
+				new Object[] { idPagamento, pagamentoModel.getNumeroContrato(), pagamentoModel.getValorConsumo(),
+						pagamentoModel.getValorParcela(), pagamentoModel.getValorPagamento(),
+						pagamentoModel.getValorSaldo(), pagamentoModel.getDataInclusaoRegistro(),
+						pagamentoModel.getIdTabelaReport(), pagamentoModel.getNumeroContratoParcela(),
+						pagamentoModel.getNumeroSequencialGarantia(), pagamentoModel.getNumeroContratoParcela() });
+
+	}
+
+	public Long getIdPagamento() {
+		return super.getId(env.getProperty("GET_ID_PAGAMENTO"));
+	}
+
+	@Override
+	public GarantiaModel fetchGarantia(Long idConttato) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ContratoModel fetchContrato(Long idContrato) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<PeriodoModel> fetchPeriodos(Long idGarantia) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<ParcelaModel> fetchParcelas(Long idPeriodo) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<LancamentoPedidoModel> fetchLancamentosPedidoPorConsumos() throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void saveLancamentoPedido(LancamentoPedidoModel lancamentoPedido) throws Exception {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void saveLancamentoPeriodo(LancamentoPeriodoModel lancamentoPeriodo) throws Exception {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public LancamentoPeriodoModel fetchLancamentoPeriodo(Long idContrato) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void saveReport(PagamentoReport pagamentoModel) throws Exception {
+		// TODO Auto-generated method stub
+
+	}
+
+	public Long getIdReport() {
+		return super.getId(env.getProperty("GET_ID_REPORT"));
+	}
+
+	@Override
+	public void updateReport(PagamentoReport pagamentoModel) throws Exception {
+		// TODO Auto-generated method stub
+
+	}
+}

@@ -1,0 +1,110 @@
+package br.com.cea.model;
+
+import java.io.Serializable;
+import java.util.Date;
+
+public class ConsumoModel implements Serializable {
+
+	private static final long serialVersionUID = 8358496982223542478L;
+	
+	private String origem;
+	private Long idContrato;
+	private Long idFor;
+	private String numNfItem;
+	private Date dataEmsNf;
+	private String cdItem;
+	private Long niLocEtc;
+	private String nuOrdCom;
+	private Date dataFnzRecItem;
+	private Double valorBruto;
+	private Double valorLiquido;
+
+	public String getOrigem() {
+		return origem;
+	}
+
+	public void setOrigem(String origem) {
+		this.origem = origem;
+	}
+
+	public Long getIdContrato() {
+		return idContrato;
+	}
+
+	public void setIdContrato(Long idContrato) {
+		this.idContrato = idContrato;
+	}
+
+	public Long getIdFor() {
+		return idFor;
+	}
+
+	public void setIdFor(Long idFor) {
+		this.idFor = idFor;
+	}
+
+	public String getNumNfItem() {
+		return numNfItem;
+	}
+
+	public void setNumNfItem(String numNfItem) {
+		this.numNfItem = numNfItem;
+	}
+
+	public Date getDataEmsNf() {
+		return dataEmsNf;
+	}
+
+	public void setDataEmsNf(Date dataEmsNf) {
+		this.dataEmsNf = dataEmsNf;
+	}
+
+	public String getCdItem() {
+		return cdItem;
+	}
+
+	public void setCdItem(String cdItem) {
+		this.cdItem = cdItem;
+	}
+
+	public Long getNiLocEtc() {
+		return niLocEtc;
+	}
+
+	public void setNiLocEtc(Long niLocEtc) {
+		this.niLocEtc = niLocEtc;
+	}
+
+	public String getNuOrdCom() {
+		return nuOrdCom;
+	}
+
+	public void setNuOrdCom(String nuOrdCom) {
+		this.nuOrdCom = nuOrdCom;
+	}
+
+	public Date getDataFnzRecItem() {
+		return dataFnzRecItem;
+	}
+
+	public void setDataFnzRecItem(Date dataFnzRecItem) {
+		this.dataFnzRecItem = dataFnzRecItem;
+	}
+
+	public Double getValorBruto() {
+		return valorBruto;
+	}
+
+	public void setValorBruto(Double valorBruto) {
+		this.valorBruto = valorBruto;
+	}
+
+	public Double getValorLiquido() {
+		return valorLiquido;
+	}
+
+	public void setValorLiquido(Double valorLiquido) {
+		this.valorLiquido = valorLiquido;
+	}
+
+}

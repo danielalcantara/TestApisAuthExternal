@@ -1,0 +1,12 @@
+package br.com.cea.repository;
+
+import java.util.List;
+
+import br.com.cea.bean.Contrato;
+
+public interface ContratosRepository {
+
+	public List<Contrato> pesquisar() throws Exception;
+	
+	public void salvar(Contrato contrato) throws Exception;
+}

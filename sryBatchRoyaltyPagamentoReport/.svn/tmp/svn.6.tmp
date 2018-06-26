@@ -1,0 +1,120 @@
+package br.com.cea.bo.impl;
+
+import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import br.com.cea.bo.IPagamentoReportBO;
+import br.com.cea.bo.IProcessarPagamentoReportBO;
+import br.com.cea.dao.IPagamentoReportDAO;
+import br.com.cea.factory.ProcessarPagamentoReportFactory;
+import br.com.cea.model.ContratoModel;
+import br.com.cea.model.LancamentoPedidoModel;
+import br.com.cea.model.LancamentoPeriodoModel;
+import br.com.cea.model.PagamentoModel;
+import br.com.cea.model.PeriodoModel;
+
+public class PagamentoReportBO implements IPagamentoReportBO {
+
+	private static Logger logger = LogManager.getLogger();
+
+	@Autowired
+	private IPagamentoReportDAO pagamentoReportDAO;
+
+	@Override
+	public void processPagamentoReport() {
+
+		try {
+			Set<LancamentoPedidoModel> listLancamentoPedido = pagamentoReportDAO.fetchLancamentosPedidoPorConsumos();
+
+			for (LancamentoPedidoModel lancamentoPedidoModel : listLancamentoPedido) {
+				pagamentoReportDAO.saveLancamentoPedido(lancamentoPedidoModel);
+			}
+
+			Set<ContratoModel> listLancamentosPorContrato = agruparLancamentosPorContrato(
+					agruparLancamentosPorPeriodo(listLancamentoPedido));
+
+			for (ContratoModel contratoModel : listLancamentosPorContrato) {
+				IProcessarPagamentoReportBO processor = ProcessarPagamentoReportFactory
+						.getProcessarPagamentoReport(contratoModel.getTipoGarantia());
+				LancamentoPeriodoModel lancamentoPeriodoModel = processor.processarReport(contratoModel);
+				PagamentoModel pagamentoModel = processor.processarPagamento(contratoModel);
+
+				if (lancamentoPeriodoModel != null)
+					pagamentoReportDAO.saveLancamentoPeriodo(lancamentoPeriodoModel);
+
+				if (pagamentoModel != null)
+					pagamentoReportDAO.savePagamento(pagamentoModel);
+			}
+		} catch (Exception ex) {
+			logger.error(ex);
+			ex.printStackTrace();
+		}
+
+	}
+
+	private Set<LancamentoPeriodoModel> agruparLancamentosPorPeriodo(
+			Set<LancamentoPedidoModel> listLancamentoPedido) {
+
+		Set<LancamentoPeriodoModel> listLancamentoPeriodo = new LinkedHashSet<>();
+		LancamentoPeriodoModel lancamentoPeriodoModel = null;
+		Long cdFor = null;
+		String nuNfItem = null;
+		Date dataEmsNf = null;
+		String cdItem = null;
+		Long niLocEtg = null;
+		boolean firstIteration = true;
+
+//		for (LancamentoPedidoModel lancamentoPedidoModel : listLancamentoPedido) {
+//			if ((firstIteration) || (!cdFor.equals(lancamentoPedidoModel.getCdFor())
+//					|| !nuNfItem.equals(lancamentoPedidoModel.getNuNfItem())
+//					|| !dataEmsNf.equals(lancamentoPedidoModel.getDataEmsNf())
+//					|| !cdItem.equals(lancamentoPedidoModel.getCdItem())
+//					|| !niLocEtg.equals(lancamentoPedidoModel.getNiLocEtg()))) {
+//
+//				listLancamentoPeriodo.add(lancamentoPeriodoModel);
+//				lancamentoPeriodoModel = new LancamentoPeriodoModel();
+//				lancamentoPeriodoModel.setIdContrato(lancamentoPedidoModel.getIdContrato());
+//				cdFor = lancamentoPedidoModel.getCdFor();
+//				nuNfItem = lancamentoPedidoModel.getNuNfItem();
+//				dataEmsNf = lancamentoPedidoModel.getDataEmsNf();
+//				cdItem = lancamentoPedidoModel.getCdItem();
+//				niLocEtg = lancamentoPedidoModel.getNiLocEtg();
+//			}
+//
+//			lancamentoPeriodoModel.getLancamentosPedido().add(lancamentoPedidoModel);
+//			firstIteration = false;
+//		}
+
+		return listLancamentoPeriodo;
+
+	}
+
+	private Set<ContratoModel> agruparLancamentosPorContrato(Set<LancamentoPeriodoModel> listLancamentoPeriodo)
+			throws Exception {
+
+		Set<ContratoModel> listLancamentosPorContrato = new LinkedHashSet<>();
+
+		for (LancamentoPeriodoModel lancamentoPeriodoModel : listLancamentoPeriodo) {
+			ContratoModel contratoModel = pagamentoReportDAO.fetchContrato(lancamentoPeriodoModel.getIdContrato());
+			contratoModel.setLancamentoPeriodo(lancamentoPeriodoModel);
+			contratoModel.setGarantia(pagamentoReportDAO.fetchGarantia(contratoModel.getId()));
+			contratoModel.getGarantia()
+					.setListPeriodos(pagamentoReportDAO.fetchPeriodos(contratoModel.getGarantia().getId()));
+
+			for (PeriodoModel periodo : contratoModel.getGarantia().getListPeriodos()) {
+				periodo.setParcelas(pagamentoReportDAO.fetchParcelas(periodo.getId()));
+			}
+
+			listLancamentosPorContrato.add(contratoModel);
+		}
+
+		return listLancamentosPorContrato;
+
+	}
+
+}

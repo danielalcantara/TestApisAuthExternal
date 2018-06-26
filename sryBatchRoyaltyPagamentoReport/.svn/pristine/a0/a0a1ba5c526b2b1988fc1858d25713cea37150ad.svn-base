@@ -1,0 +1,112 @@
+package br.com.cea.model;
+
+import java.io.Serializable;
+import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+public class LancamentoPeriodoModel implements Serializable {
+
+	private static final long serialVersionUID = 8410229190242940240L;
+
+	private Long id;
+	private Long idContrato;
+	private Double valorBrutoConsolidado;
+	private Double valorLiquidoConsolidado;
+	private Date dataAlteracaoRegistro;
+	private Integer codigoPeriodicidade;
+	private Date dataInicioReport;
+	private Date dataFimReport;
+	private Date dataInclusaoRegistro;
+	private String statusReport;
+	Set<LancamentoPedidoModel> lancamentosPedido = new LinkedHashSet<>();
+
+	public Double getValorBrutoConsolidado() {
+		return valorBrutoConsolidado;
+	}
+
+	public void setValorBrutoConsolidado(Double valorBrutoConsolidado) {
+		this.valorBrutoConsolidado = valorBrutoConsolidado;
+	}
+
+	public Double getValorLiquidoConsolidado() {
+		return valorLiquidoConsolidado;
+	}
+
+	public void setValorLiquidoConsolidado(Double valorLiquidoConsolidado) {
+		this.valorLiquidoConsolidado = valorLiquidoConsolidado;
+	}
+
+	public Date getDataAlteracaoRegistro() {
+		return dataAlteracaoRegistro;
+	}
+
+	public void setDataAlteracaoRegistro(Date dataAlteracaoRegistro) {
+		this.dataAlteracaoRegistro = dataAlteracaoRegistro;
+	}
+
+	public Date getDataInicioReport() {
+		return dataInicioReport;
+	}
+
+	public void setDataInicioReport(Date dataInicioReport) {
+		this.dataInicioReport = dataInicioReport;
+	}
+
+	public Date getDataFimReport() {
+		return dataFimReport;
+	}
+
+	public void setDataFimReport(Date dataFimReport) {
+		this.dataFimReport = dataFimReport;
+	}
+
+	public Date getDataInclusaoRegistro() {
+		return dataInclusaoRegistro;
+	}
+
+	public void setDataInclusaoRegistro(Date dataInclusaoRegistro) {
+		this.dataInclusaoRegistro = dataInclusaoRegistro;
+	}
+
+	public String getStatusReport() {
+		return statusReport;
+	}
+
+	public void setStatusReport(String statusReport) {
+		this.statusReport = statusReport;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Set<LancamentoPedidoModel> getLancamentosPedido() {
+		return lancamentosPedido;
+	}
+
+	public void setLancamentosPedido(Set<LancamentoPedidoModel> lancamentosPedido) {
+		this.lancamentosPedido = lancamentosPedido;
+	}
+
+	public Long getIdContrato() {
+		return idContrato;
+	}
+
+	public void setIdContrato(Long idContrato) {
+		this.idContrato = idContrato;
+	}
+
+	public Integer getCodigoPeriodicidade() {
+		return codigoPeriodicidade;
+	}
+
+	public void setCodigoPeriodicidade(Integer codigoPeriodicidade) {
+		this.codigoPeriodicidade = codigoPeriodicidade;
+	}
+
+}

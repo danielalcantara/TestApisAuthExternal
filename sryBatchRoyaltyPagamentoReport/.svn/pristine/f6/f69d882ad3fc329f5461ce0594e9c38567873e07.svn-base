@@ -1,0 +1,79 @@
+package br.com.cea.bean;
+
+public class Contrato {
+
+	private Long contratoId;
+	private String descricaoItem;
+	private String descricaContrato;
+	private String dataIniciovigencia;
+	private String dataFimVigencia;
+	private String DataToleranciaRecebimentoItem;
+	private String statusContratoAtivo;
+	private Integer diasRestantes;
+
+	public Long getContratoId() {
+		return contratoId;
+	}
+
+	public void setContratoId(Long contratoId) {
+		this.contratoId = contratoId;
+	}
+
+	public String getDescricaoItem() {
+		return descricaoItem;
+	}
+
+	public void setDescricaoItem(String descricaoItem) {
+		this.descricaoItem = descricaoItem;
+	}
+
+	public String getDescricaContrato() {
+		return descricaContrato;
+	}
+
+	public void setDescricaContrato(String descricaContrato) {
+		this.descricaContrato = descricaContrato;
+	}
+
+	public String getDataIniciovigencia() {
+		return dataIniciovigencia;
+	}
+
+	public void setDataIniciovigencia(String dataIniciovigencia) {
+		this.dataIniciovigencia = dataIniciovigencia;
+	}
+
+	public String getDataFimVigencia() {
+		return dataFimVigencia;
+	}
+
+	public void setDataFimVigencia(String dataFimVigencia) {
+		this.dataFimVigencia = dataFimVigencia;
+	}
+
+	public String getDataToleranciaRecebimentoItem() {
+		return DataToleranciaRecebimentoItem;
+	}
+
+	public void setDataToleranciaRecebimentoItem(String dataToleranciaRecebimentoItem) {
+		DataToleranciaRecebimentoItem = dataToleranciaRecebimentoItem;
+	}
+
+	public String getStatusContratoAtivo() {
+		return statusContratoAtivo;
+	}
+
+	public void setStatusContratoAtivo(String statusContratoAtivo) {
+		this.statusContratoAtivo = statusContratoAtivo;
+	}
+
+	public Integer getDiasRestantes() {
+		return diasRestantes;
+	}
+
+	public void setDiasRestantes(Integer diasRestantes) {
+		this.diasRestantes = diasRestantes;
+	}
+	
+	
+}

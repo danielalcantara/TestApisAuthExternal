@@ -1,0 +1,56 @@
+package br.com.cea.model;
+
+import java.io.Serializable;
+import java.util.Date;
+
+public class PagamentoModel implements Serializable {
+
+	private static final long serialVersionUID = 4350832736258180961L;
+	
+	private Long id;
+	private Date dataPagamento;
+	private Double valorConsumo;
+	private Double valorParcela;
+	private Double valorPagamento;
+
+	public Double getValorConsumo() {
+		return valorConsumo;
+	}
+
+	public void setValorConsumo(Double valorConsumo) {
+		this.valorConsumo = valorConsumo;
+	}
+
+	public Double getValorParcela() {
+		return valorParcela;
+	}
+
+	public void setValorParcela(Double valorParcela) {
+		this.valorParcela = valorParcela;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Date getDataPagamento() {
+		return dataPagamento;
+	}
+
+	public void setDataPagamento(Date dataPagamento) {
+		this.dataPagamento = dataPagamento;
+	}
+
+	public Double getValorPagamento() {
+		return valorPagamento;
+	}
+
+	public void setValorPagamento(Double valorPagamento) {
+		this.valorPagamento = valorPagamento;
+	}
+
+}

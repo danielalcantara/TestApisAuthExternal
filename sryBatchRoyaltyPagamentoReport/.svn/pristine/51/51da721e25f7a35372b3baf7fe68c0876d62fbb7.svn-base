@@ -1,0 +1,115 @@
+package br.com.cea.bo.impl;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Iterator;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import br.com.cea.bo.IProcessarPagamentoReportBO;
+import br.com.cea.dao.IPagamentoReportDAO;
+import br.com.cea.model.ContratoModel;
+import br.com.cea.model.LancamentoPedidoModel;
+import br.com.cea.model.LancamentoPeriodoModel;
+import br.com.cea.model.PagamentoModel;
+import br.com.cea.model.ParcelaModel;
+import br.com.cea.model.PeriodoModel;
+import br.com.cea.util.DateUtil;
+
+public class ProcessarPagamentoReportGMPUI implements IProcessarPagamentoReportBO {
+
+	@Autowired
+	private IPagamentoReportDAO pagamentoReportDAO;
+
+	@Override
+	public void processarReport(ContratoModel contrato) throws Exception {
+		LancamentoPeriodoModel lancamentoPeriodoAberto = pagamentoReportDAO
+				.fetchLancamentoPeriodoAberto(contrato.getId());
+		Iterator<PeriodoModel> iterPeriodo = contrato.getGarantia().getListPeriodos().iterator();
+
+		PeriodoModel periodoModel = !iterPeriodo.hasNext() ? iterPeriodo.next() : null;
+
+		if (periodoModel != null && periodoModel.getLancamentoPeriodo() != null
+				&& !periodoModel.getLancamentoPeriodo().getLancamentosPedido().isEmpty()) {
+
+			if (lancamentoPeriodoAberto == null) {
+				Date dataFim = DateUtil.addMonthsOnDate(periodoModel.getDataInicio(), contrato.getPeriodicidade());
+				lancamentoPeriodoAberto = new LancamentoPeriodoModel();
+				lancamentoPeriodoAberto.setIdContrato(contrato.getId());
+				lancamentoPeriodoAberto.setIdPeriodo(periodoModel.getId());
+				lancamentoPeriodoAberto.setStatusReport("A");
+				lancamentoPeriodoAberto.setDataInicioReport(periodoModel.getDataInicio());
+				lancamentoPeriodoAberto.setDataFimReport(dataFim);
+			}
+
+			for (LancamentoPedidoModel lancamentoPedidoModel : periodoModel.getLancamentoPeriodo()
+					.getLancamentosPedido()) {
+				lancamentoPeriodoAberto.setValorBrutoConsolidado(
+						lancamentoPeriodoAberto.getValorBrutoConsolidado() + lancamentoPedidoModel.getValorBruto());
+				lancamentoPeriodoAberto.setValorLiquidoConsolidado(
+						lancamentoPeriodoAberto.getValorLiquidoConsolidado() + lancamentoPedidoModel.getValorLiquido());
+			}
+
+			if (DateUtil.compareDateWithoutTime(lancamentoPeriodoAberto.getDataFimReport(),
+					Calendar.getInstance().getTime()) == 0) {
+				LancamentoPeriodoModel lancamentoPeriodoModelNew = new LancamentoPeriodoModel();
+				Date dataFim = DateUtil.addMonthsOnDate(lancamentoPeriodoAberto.getDataFimReport(),
+						contrato.getPeriodicidade());
+				lancamentoPeriodoModelNew.setDataFimReport(dataFim);
+				lancamentoPeriodoModelNew
+						.setDataInicioReport(DateUtil.addDaysOnDate(lancamentoPeriodoAberto.getDataFimReport(), 1));
+				lancamentoPeriodoModelNew.setStatusReport("A");
+				lancamentoPeriodoModelNew.setIdContrato(contrato.getId());
+				lancamentoPeriodoModelNew.setIdPeriodo(periodoModel.getId());
+				lancamentoPeriodoAberto.setStatusReport("F");
+
+				pagamentoReportDAO.saveLancamentoPeriodo(lancamentoPeriodoModelNew);
+			}
+
+			for (LancamentoPedidoModel lancamentoPedido : lancamentoPeriodoAberto.getLancamentosPedido()) {
+				pagamentoReportDAO.saveLancamentoPedido(lancamentoPedido);
+			}
+
+			pagamentoReportDAO.updateLancamentoPeriodo(lancamentoPeriodoAberto);
+
+		}
+
+	}
+
+	@Override
+	public void processarPagamento(ContratoModel contrato) throws Exception {
+
+		if (contrato.getGarantia().getListPeriodos().iterator().hasNext()) {
+			
+			for (PeriodoModel periodoModel : contrato.getGarantia().getListPeriodos()) {
+				
+				if (periodoModel.getParcelas().iterator().hasNext()) {
+					
+					for (ParcelaModel parcelaModel : periodoModel.getParcelas()) {
+						
+						if (DateUtil.compareDateWithoutTime(parcelaModel.getDataVencimento(),
+								Calendar.getInstance().getTime()) == 0) {
+							
+							PagamentoModel pagamentoModel = new PagamentoModel();
+							pagamentoModel.setDataPagamento(parcelaModel.getDataVencimento());
+							pagamentoModel.setNumeroContrato(contrato.getId());
+							pagamentoModel.setValorParcela(parcelaModel.getValor());
+							pagamentoModel.setValorPagamento(parcelaModel.getValor());
+							
+							pagamentoReportDAO.savePagamento(pagamentoModel);
+						}
+						
+					}
+					
+				}
+				
+			}
+			
+		}
+	}
+	
+	private void processarPagamentoConsumo(ParcelaModel parcela) {
+		
+	}
+
+}

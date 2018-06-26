@@ -1,0 +1,44 @@
+package br.com.cea.model;
+
+import java.util.Set;
+
+public class GarantiaModel {
+
+	private Long id;
+	private Long idContrato;
+	private Double valor;
+	Set<PeriodoModel> periodos;
+
+	public Double getValor() {
+		return valor;
+	}
+
+	public void setValor(Double valor) {
+		this.valor = valor;
+	}
+
+	public Set<PeriodoModel> getListPeriodos() {
+		return periodos;
+	}
+
+	public void setListPeriodos(Set<PeriodoModel> setPeriodos) {
+		this.periodos = setPeriodos;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Long getIdContrato() {
+		return idContrato;
+	}
+
+	public void setIdContrato(Long idContrato) {
+		this.idContrato = idContrato;
+	}
+
+}

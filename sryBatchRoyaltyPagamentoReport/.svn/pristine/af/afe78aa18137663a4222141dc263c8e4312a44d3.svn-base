@@ -1,0 +1,40 @@
+package br.com.cea.repository.impl;
+
+import java.sql.Timestamp;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
+
+import br.com.cea.bean.Contrato;
+import br.com.cea.util.UtilDate;
+
+@Component
+public class ContratosSalvar {
+
+	private static Logger logger = LogManager.getLogger();
+
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
+	
+	@Autowired
+	Environment env;
+
+	public void salvarContrato(Contrato contrato) throws Exception {
+
+		logger.info("Contrato "+contrato.getContratoId());
+		logger.info("Data de vigencia "+contrato.getDataFimVigencia());
+		
+		try {
+			jdbcTemplate.update(env.getProperty("SALVAR_ENVIO_EMAIL"),
+					new Object[] { contrato.getContratoId(),
+							UtilDate.converterStringToDate(contrato.getDataFimVigencia()),
+							new Timestamp(System.currentTimeMillis()) });
+		} catch (Exception e) {
+			throw new Exception("Falha ao tentar salvar o controle de envio de email " + e.getMessage());
+		}
+	}
+}

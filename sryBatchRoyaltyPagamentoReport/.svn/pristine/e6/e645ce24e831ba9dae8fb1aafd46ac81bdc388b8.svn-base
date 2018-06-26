@@ -1,0 +1,39 @@
+package br.com.cea.bo.impl;
+
+import br.com.cea.bo.IProcessarPagamentoReportBO;
+import br.com.cea.dao.IPagamentoReportDAO;
+import br.com.cea.model.LancamentoPeriodoModel;
+import br.com.cea.model.PeriodoModel;
+
+public class ProcessarPagamentoReportGMPUI extends ProcessarPagamentoReportTemplate
+		implements IProcessarPagamentoReportBO {
+
+	@Override
+	public void processarReport() throws Exception {
+		super.processarReport();
+	}
+
+	@Override
+	public void processarPagamentoParcela() throws Exception {
+		super.processarPagamentoParcela();
+	}
+
+	protected void fechamentoReport(PeriodoModel periodoModel, LancamentoPeriodoModel lancamentoPeriodoAberto)
+			throws Exception {
+		super.fechamentoReport(periodoModel, lancamentoPeriodoAberto);
+	}
+
+	protected void acumularValores(LancamentoPeriodoModel lancamentoPeriodoModel) {
+		super.acumularValores(lancamentoPeriodoModel);
+	}
+
+	protected void processarSaldo(PeriodoModel periodoModel) throws Exception {
+		super.processarSaldo(periodoModel);
+	}
+
+	protected void processarPagamentoConsumo(LancamentoPeriodoModel lancamentoPeriodoModel,
+			IPagamentoReportDAO pagamentoReportDAO) throws Exception {
+		super.processarPagamentoConsumo(lancamentoPeriodoModel);
+	}
+
+}

@@ -1,0 +1,18 @@
+package br.com.cea.enumerator;
+
+public enum TipoCalculoValoresEnum {
+	TIPO1("GMPUI"),
+	TIPO2("GMP1"),
+	TIPO3("GMP2"),
+	TIPO4("GMP4");
+	
+	private String tipo;
+    
+	TipoCalculoValoresEnum(String tipo) {
+    	this.tipo = tipo;
+    }
+    
+    public String tipo() {
+    	return tipo;
+    }
+}

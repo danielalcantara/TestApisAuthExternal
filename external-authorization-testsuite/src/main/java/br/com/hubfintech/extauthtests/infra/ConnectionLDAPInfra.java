@@ -65,6 +65,11 @@ public class ConnectionLDAPInfra implements IConnectionLDAPInfra {
 			SearchResult sr = (SearchResult) result.next();
 
 			Attribute memberOf = sr.getAttributes().get(MEMBER_OF);
+			String displayName = sr.getNameInNamespace();
+			
+			if (displayName != null) {
+				displayName = displayName.replace("CN=", "").split(",")[0];
+			}
 			
 			if (memberOf != null) {
 				for (Enumeration<?> e1 = memberOf.getAll(); e1.hasMoreElements();) {
@@ -72,7 +77,7 @@ public class ConnectionLDAPInfra implements IConnectionLDAPInfra {
 				}
 			}
 
-			System.out.println("Authentication Success!");
+			System.out.println("User: " + displayName + ". Authentication Success!");
 			
 		} catch (AuthenticationException authEx) {
 			System.out.println("Authentication failed!");

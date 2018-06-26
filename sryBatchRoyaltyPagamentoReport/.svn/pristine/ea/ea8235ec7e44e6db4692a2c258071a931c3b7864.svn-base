@@ -1,0 +1,14 @@
+package br.com.cea.dao;
+
+import java.util.List;
+
+import br.com.cea.model.GarantiaModel;
+import br.com.cea.model.PagamentoModel;
+
+public interface IPagamentoReportDAO {
+	
+	public Integer salvarPagamento(PagamentoModel pagamentoModel) throws Exception;
+	
+	public List<GarantiaModel> buscarGarantia(Integer idConttato) throws Exception;
+	
+}

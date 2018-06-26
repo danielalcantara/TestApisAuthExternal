@@ -1,0 +1,59 @@
+package br.com.cea.dao;
+
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.dao.DataAccessException;
+
+import br.com.cea.model.ConsumoModel;
+import br.com.cea.model.ContratoModel;
+import br.com.cea.model.GarantiaModel;
+import br.com.cea.model.LancamentoPedidoModel;
+import br.com.cea.model.LancamentoPeriodoModel;
+import br.com.cea.model.PagamentoModel;
+import br.com.cea.model.ParcelaModel;
+import br.com.cea.model.PeriodoModel;
+
+public interface IPagamentoReportDAO {
+
+	public void savePagamento(PagamentoModel pagamentoModel) throws Exception;
+
+	public ContratoModel fetchContrato(Long idContrato) throws Exception;
+
+	public GarantiaModel fetchGarantia(Long idConttato) throws Exception;
+
+	public List<PeriodoModel> fetchPeriodos(Long idGarantia) throws Exception;
+
+	public List<ParcelaModel> fetchParcelas(Long idPeriodo, Long idContrato) throws Exception;
+
+	public List<ConsumoModel> fetchConsumos() throws Exception;
+
+	public PagamentoModel fetchPagamentoConsumo(Long idReport) throws SQLException, DataAccessException;
+
+	public void saveLancamentoPeriodo(LancamentoPeriodoModel lancamentoPeriodo) throws Exception;
+
+	public void saveLancamentoPedido(LancamentoPedidoModel lancamentoPedido) throws Exception;
+
+	public void savePedidoReport(LancamentoPeriodoModel lancamentoPeriodo) throws Exception;
+
+	public void updateLancamentoPeriodo(LancamentoPeriodoModel lancamentoPeriodo) throws Exception;
+
+	public void updatePagamento(PagamentoModel pagamentoModel) throws Exception;
+
+	public void updateParcela(ParcelaModel parcelaModel) throws Exception;
+
+	public List<LancamentoPeriodoModel> fetchAllLancamentoPeriodoPorContrato(Long idContrato, Long idPeriodo)
+			throws SQLException, DataAccessException;
+
+	public LancamentoPeriodoModel fetchLancamentoPeriodoAbertoPorContrato(Long idContrato, Long idPeriodo)
+			throws SQLException, DataAccessException;
+
+	public LancamentoPeriodoModel fetchLancamentoPeriodoPorDataInicioReport(Long idContrato, Long idPeriodo,
+			Date dataInicioReport) throws SQLException, DataAccessException;
+
+	public List<LancamentoPeriodoModel> fetchAllLancamentoPeriodoAberto() throws SQLException, DataAccessException;
+
+	public List<LancamentoPedidoModel> fetchPedido(Long idPeriodo) throws Exception;
+
+}

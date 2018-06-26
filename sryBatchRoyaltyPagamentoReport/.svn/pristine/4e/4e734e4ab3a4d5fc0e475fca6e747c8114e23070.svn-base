@@ -1,0 +1,7 @@
+package br.com.cea.bo;
+
+public interface IPagamentoReportBO {
+	
+	public void processValoresCustoPorPedido();
+
+}

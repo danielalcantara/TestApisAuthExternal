@@ -1,0 +1,367 @@
+package br.com.cea.bo.impl;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+
+import br.com.cea.bo.IPagamentoReportBO;
+import br.com.cea.bo.IProcessarPagamentoReportBO;
+import br.com.cea.dao.IPagamentoReportDAO;
+import br.com.cea.dao.logger.ILoggerCustom;
+import br.com.cea.factory.ProcessarPagamentoReportFactory;
+import br.com.cea.model.ConsumoModel;
+import br.com.cea.model.ContratoModel;
+import br.com.cea.model.LancamentoPedidoModel;
+import br.com.cea.model.LancamentoPeriodoModel;
+import br.com.cea.model.PedidoSkuModel;
+import br.com.cea.model.PeriodoModel;
+import br.com.cea.util.DateUtil;
+
+@Component
+public class PagamentoReportBO implements IPagamentoReportBO {
+
+	private static Logger logger = LogManager.getLogger();
+
+	@Autowired
+	private IPagamentoReportDAO pagamentoReportDAO;
+
+	private IProcessarPagamentoReportBO processor;
+
+	@Autowired
+	PlatformTransactionManager transctionManager;
+
+	@Autowired
+	private ILoggerCustom loggerCustom;
+
+	private final String STATUS_REPORT_FECHADO = "F";
+
+	@Override
+	public boolean processarPedidos() {
+
+		boolean successProcess = true;
+
+		logger.info("========= INICIANDO PROCESSAMENTO DE PEDIDOS ===============");
+
+		try {
+
+			List<LancamentoPedidoModel> listLancamentoPedido = agruparLancamentosPorPedido(
+					pagamentoReportDAO.fetchConsumos());
+
+			if (!listLancamentoPedido.isEmpty()) {
+
+				List<ContratoModel> listLancamentosPorContrato = agruparLancamentosPorContrato(listLancamentoPedido);
+
+				successProcess = processarContratos(listLancamentosPorContrato);
+
+			} else {
+
+				logger.info("========== NÃO HÁ PEDIDOS PARA SEREM PROCESSADOS ===========");
+
+			}
+
+		} catch (Exception ex) {
+			logger.error(ex);
+			successProcess = false;
+		} finally {
+			if (successProcess) {
+				logger.info("========== PROCESSAMENTO DE PEDIDOS FINALIZADO COM SUCESSO! =================");
+			} else {
+				logger.info("========== PROCESSAMENTO DE PEDIDOS FINALIZADO COM ERROS! =================");
+			}
+		}
+
+		return successProcess;
+
+	}
+
+	@Override
+	public boolean fecharReportsVencidos() {
+
+		logger.info("======= VERIFICANDO SE HÁ REPORTS PARA SEREM FECHADOS ========");
+
+		boolean successProcess = true;
+
+		try {
+
+			List<LancamentoPeriodoModel> lancamentoPeriodoModels = pagamentoReportDAO.fetchAllLancamentoPeriodoAberto();
+
+			if (lancamentoPeriodoModels != null && !lancamentoPeriodoModels.isEmpty()) {
+
+				logger.info("======= INICIANDO FECHAMENTO DE REPORTS! ========");
+
+				Long idContrato = null;
+				int countFechamentos = 0;
+				IProcessarPagamentoReportBO processor = null;
+
+				for (LancamentoPeriodoModel lancamentoPeriodoModel : lancamentoPeriodoModels) {
+					TransactionDefinition df = new DefaultTransactionDefinition();
+					TransactionStatus status = transctionManager.getTransaction(df);
+
+					try {
+
+						if (lancamentoPeriodoModel.getIdContrato() == null)
+							continue;
+
+						if (processor == null || !lancamentoPeriodoModel.getIdContrato().equals(idContrato)) {
+							processor = ProcessarPagamentoReportFactory.getProcessarPagamentoReport(
+									pagamentoReportDAO.fetchContratoComGarantia(lancamentoPeriodoModel.getIdContrato())
+											.getGarantia().getNomeClasseNegocio(),
+									pagamentoReportDAO);
+							idContrato = lancamentoPeriodoModel.getIdContrato();
+						}
+
+						processor.fechamentoReport(lancamentoPeriodoModel, null);
+
+						if (STATUS_REPORT_FECHADO.equals(lancamentoPeriodoModel.getStatusReport())) {
+							pagamentoReportDAO.updateLancamentoPeriodo(lancamentoPeriodoModel);
+							countFechamentos++;
+						}
+
+						transctionManager.commit(status);
+					} catch (Exception ex) {
+						logger.error("Erro no processamento do contrato " + lancamentoPeriodoModel.getIdContrato()
+								+ ". Erro: " + ex.getMessage());
+						loggerCustom.gerarLog(lancamentoPeriodoModel);
+						transctionManager.rollback(status);
+						successProcess = false;
+					}
+				}
+
+				if (countFechamentos > 0) {
+					logger.info("======= QUANTIDADE DE REPORTS FECHADOS: " + countFechamentos + " ========");
+				} else {
+					logger.info("======= NÃO HOUVE REPORTS HÁ SEREM FECHADOS! ========");
+				}
+
+			}
+
+		} catch (Exception ex) {
+			logger.error(ex);
+			successProcess = false;
+		} finally {
+			if (successProcess) {
+				logger.info("======= FECHAMENTO DE REPORTS FINALIZADO COM SUCESSO! ========");
+			} else {
+				logger.info(
+						"========== PROCESSO DE FECHAMENTO DE REPORTS VENCIDOS FINALIZADO COM ERROS! =================");
+			}
+		}
+
+		return successProcess;
+
+	}
+
+	private boolean processarContratos(List<ContratoModel> listLancamentosPorContrato) {
+
+		boolean successProcess = true;
+
+		for (ContratoModel contratoModel : listLancamentosPorContrato) {
+			TransactionDefinition df = new DefaultTransactionDefinition();
+			TransactionStatus status = transctionManager.getTransaction(df);
+
+			try {
+				processarContrato(contratoModel);
+				transctionManager.commit(status);
+			} catch (Exception ex) {
+				logger.error(
+						"Erro no processamento do contrato " + contratoModel.getId() + ". Erro: " + ex.getMessage());
+				loggerCustom.gerarLog(contratoModel);
+				transctionManager.rollback(status);
+				successProcess = false;
+			}
+		}
+
+		return successProcess;
+	}
+
+	@Transactional
+	private void processarContrato(ContratoModel contratoModel) throws Exception {
+
+		if (processor == null || !processor.getTipoGarantia().equals(contratoModel.getGarantia().getTipo())) {
+			processor = ProcessarPagamentoReportFactory.getProcessarPagamentoReport(
+					contratoModel.getGarantia().getNomeClasseNegocio(), pagamentoReportDAO);
+
+			processor.setContrato(contratoModel);
+			processor.setTipoGarantia(contratoModel.getGarantia().getTipo());
+		}
+
+		logger.info("Iniciando processamento de pagamentos e reports para o contrato: " + contratoModel.getId());
+
+		processor.processarPagamentoReport();
+
+		logger.info("Processamento de pagamentos e reports finalizado com sucesso para o contrato: "
+				+ contratoModel.getId());
+
+	}
+
+	private List<LancamentoPedidoModel> agruparLancamentosPorPedido(List<ConsumoModel> listConsumos) {
+		logger.info("Realiza o agrupamento por pedido");
+
+		List<LancamentoPedidoModel> listLancamentoPedido = new ArrayList<>();
+		LancamentoPedidoModel lancamentoPedidoModel = new LancamentoPedidoModel();
+		Long cdFor = null;
+		String nuNfItem = null;
+		Date dataEmsNf = null;
+		Long niLocEtg = null;
+
+		for (ConsumoModel consumo : listConsumos) {
+			if (!consumo.getIdFor().equals(cdFor) || !consumo.getNumNfItem().equals(nuNfItem) || dataEmsNf == null
+					|| DateUtil.compareDateWithoutTime(consumo.getDataEmsNf(), dataEmsNf) != 0
+					|| !consumo.getNiLocEtc().equals(niLocEtg)) {
+
+				cdFor = consumo.getIdFor();
+				nuNfItem = consumo.getNumNfItem();
+				dataEmsNf = consumo.getDataEmsNf();
+				niLocEtg = consumo.getNiLocEtc();
+				lancamentoPedidoModel = new LancamentoPedidoModel();
+				lancamentoPedidoModel.setValorBruto(0.0);
+				lancamentoPedidoModel.setValorLiquido(0.0);
+				lancamentoPedidoModel.setIdContrato(consumo.getIdContrato());
+				lancamentoPedidoModel.setDataRecebementoDevolucaoItem(consumo.getDataFnzRecItem());
+				listLancamentoPedido.add(lancamentoPedidoModel);
+			}
+
+			PedidoSkuModel pedidoSkuModel = new PedidoSkuModel();
+			pedidoSkuModel.setCdItem(consumo.getCdItem());
+			pedidoSkuModel.setCodigoFornecedor(consumo.getIdFor());
+			pedidoSkuModel.setDataEmsNf(consumo.getDataEmsNf());
+			pedidoSkuModel.setNiLocEtg(consumo.getNiLocEtc());
+			pedidoSkuModel.setNuNfItem(consumo.getNumNfItem());
+			lancamentoPedidoModel.addPedidoSku(pedidoSkuModel);
+
+			lancamentoPedidoModel.setValorLiquido(lancamentoPedidoModel.getValorLiquido() + consumo.getValorLiquido());
+			lancamentoPedidoModel.setValorBruto(lancamentoPedidoModel.getValorBruto() + consumo.getValorBruto());
+
+		}
+
+		return listLancamentoPedido;
+	}
+
+	private List<ContratoModel> agruparLancamentosPorContrato(List<LancamentoPedidoModel> listLancamentoPedido)
+			throws Exception {
+
+		logger.info("Realiza o agrupamento por contrato");
+		List<ContratoModel> listLancamentosPorContrato = new ArrayList<>();
+		List<Long> listIdContrato = getIdContractsInProcess(listLancamentoPedido);
+
+		for (Long idContrato : listIdContrato) {
+
+			ContratoModel contratoModel = pagamentoReportDAO.fetchContratoComGarantia(idContrato);
+			contratoModel.getGarantia()
+					.setListPeriodos(pagamentoReportDAO.fetchPeriodos(contratoModel.getGarantia().getId()));
+
+			agruparLancamentosPorPeriodo(contratoModel, listLancamentoPedido);
+
+			listLancamentosPorContrato.add(contratoModel);
+		}
+
+		return listLancamentosPorContrato;
+
+	}
+
+	private void agruparLancamentosPorPeriodo(ContratoModel contratoModel,
+			List<LancamentoPedidoModel> lancamentoPedidoModels) throws Exception {
+
+		Integer periodicidade = contratoModel.getPeriodicidade();
+
+		for (PeriodoModel periodoModel : contratoModel.getGarantia().getListPeriodos()) {
+
+			List<LancamentoPeriodoModel> lancamentoPeriodoModels = pagamentoReportDAO
+					.fetchAllLancamentoPeriodoPorContrato(contratoModel.getId(), periodoModel.getId());
+
+			if (lancamentoPeriodoModels == null || lancamentoPeriodoModels.isEmpty()) {
+				lancamentoPeriodoModels = new ArrayList<>();
+				Date dataInicioReport = periodoModel.getDataInicio();
+				Date dataFimReport = DateUtil.addMonthsOnDate(dataInicioReport, periodicidade);
+
+				while (DateUtil.compareDateWithoutTime(dataInicioReport, periodoModel.getDataFim()) < 0) {
+					LancamentoPeriodoModel lancamentoPeriodoModel = new LancamentoPeriodoModel();
+
+					lancamentoPeriodoModel.setCodigoPeriodicidade(periodicidade);
+					lancamentoPeriodoModel.setIdContrato(periodoModel.getIdContrato());
+					lancamentoPeriodoModel.setIdPeriodo(periodoModel.getId());
+					lancamentoPeriodoModel.setStatusReport("A");
+					lancamentoPeriodoModel.setValorBrutoConsolidado(0D);
+					lancamentoPeriodoModel.setValorLiquidoConsolidado(0D);
+					lancamentoPeriodoModel.setValorSaldo(0D);
+					lancamentoPeriodoModel.setDataInicioReport(dataInicioReport);
+					lancamentoPeriodoModel.setDataFimReport(DateUtil.addDaysOnDate(dataFimReport, -1));
+					dataInicioReport = DateUtil.addMonthsOnDate(dataInicioReport, periodicidade);
+					dataFimReport = DateUtil.addMonthsOnDate(dataInicioReport, periodicidade);
+
+					lancamentoPeriodoModels.add(lancamentoPeriodoModel);
+				}
+			}
+
+			for (LancamentoPeriodoModel lancamentoPeriodoModel : lancamentoPeriodoModels) {
+				agruparLancamentoPedidoPorPeriodo(lancamentoPeriodoModel, lancamentoPedidoModels);
+			}
+
+			periodoModel.setLancamentosPeriodo(lancamentoPeriodoModels);
+
+		}
+
+	}
+
+	private void agruparLancamentoPedidoPorPeriodo(LancamentoPeriodoModel lancamentoPeriodoModel,
+			List<LancamentoPedidoModel> listLancamentoPedido) {
+
+		if (listLancamentoPedido != null && !listLancamentoPedido.isEmpty()) {
+
+			logger.info("Realiza o agrupamento por periodo");
+			List<LancamentoPedidoModel> listLancamentoPedidoAdd = new ArrayList<>();
+			List<LancamentoPedidoModel> listLancamentoPedidoRemove = new ArrayList<>();
+			Long idContrato = lancamentoPeriodoModel.getIdContrato();
+
+			listLancamentoPedidoRemove.addAll(listLancamentoPedido);
+
+			for (LancamentoPedidoModel lancamentoPedidoModel : listLancamentoPedido) {
+				if (idContrato.equals(lancamentoPedidoModel.getIdContrato()) && (DateUtil.compareDateWithoutTime(
+						lancamentoPeriodoModel.getDataInicioReport(),
+						lancamentoPedidoModel.getDataRecebementoDevolucaoItem()) <= 0
+						&& DateUtil.compareDateWithoutTime(lancamentoPedidoModel.getDataRecebementoDevolucaoItem(),
+								lancamentoPeriodoModel.getDataFimReport()) <= 0)) {
+
+					listLancamentoPedidoAdd.add(lancamentoPedidoModel);
+					listLancamentoPedidoRemove.remove(lancamentoPedidoModel);
+
+				}
+			}
+
+			lancamentoPeriodoModel.setLancamentosPedido(listLancamentoPedidoAdd);
+			listLancamentoPedido.clear();
+			listLancamentoPedido.addAll(listLancamentoPedidoRemove);
+
+		}
+
+	}
+
+	private List<Long> getIdContractsInProcess(List<LancamentoPedidoModel> listLancamentoPedido) {
+		if (listLancamentoPedido == null || listLancamentoPedido.isEmpty())
+			return null;
+
+		List<Long> listIdContrato = new ArrayList<>();
+		long lastIdContrato = listLancamentoPedido.get(0).getIdContrato();
+		listIdContrato.add(lastIdContrato);
+
+		for (LancamentoPedidoModel lancamentoPedidoModel : listLancamentoPedido) {
+			if (lancamentoPedidoModel.getIdContrato() != lastIdContrato) {
+				listIdContrato.add(lancamentoPedidoModel.getIdContrato());
+				lastIdContrato = lancamentoPedidoModel.getIdContrato();
+			}
+		}
+
+		return listIdContrato;
+	}
+
+}

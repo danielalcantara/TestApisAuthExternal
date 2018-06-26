@@ -1,0 +1,16 @@
+version: '3'
+services:
+  ms-laudo-evolutivo:
+    build:
+      dockerfile: ./ms-laudo-evolutivo.dockerfile
+      context: .
+    image: ms-laudo-evolutivo
+    container_name: ms-laudo-evolutivo
+    ports:
+      - "8585:8181"
+    networks:
+      - network-dasa
+
+networks: 
+  network-dasa:
+    driver: bridge

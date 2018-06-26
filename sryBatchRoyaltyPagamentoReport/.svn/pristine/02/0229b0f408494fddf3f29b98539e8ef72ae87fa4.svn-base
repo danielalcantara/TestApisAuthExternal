@@ -1,0 +1,25 @@
+package br.com.cea.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import br.com.cea.bean.Contrato;
+import br.com.cea.repository.impl.ContratosRepositoryImpl;
+
+@Service
+public class ConciliacaoGrtaServices {
+
+	@Autowired
+	private ContratosRepositoryImpl repositoryImpl;
+	
+	public List<Contrato> pesquisar() throws Exception{
+		List<Contrato> lista = repositoryImpl.pesquisar();
+		return lista;
+	}
+	
+	public void salvar(Contrato contrato) throws Exception{
+		repositoryImpl.salvar(contrato);
+	}
+}

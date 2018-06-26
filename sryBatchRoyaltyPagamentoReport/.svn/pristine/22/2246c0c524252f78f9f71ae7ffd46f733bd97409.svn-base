@@ -1,0 +1,42 @@
+package br.com.cea.config;
+
+import javax.sql.DataSource;
+
+import org.apache.commons.dbcp.BasicDataSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
+
+@Component
+@Configuration
+@ComponentScan(basePackages= {"br.com.cea.*"})
+@PropertySource({
+	"classpath:database.properties",
+	"classpath:email_sry.properties",
+	"classpath:queries.properties"})
+public class BeanConfiguration {
+
+	@Autowired
+	Environment env;
+	
+	@Bean
+	public DataSource dataSource() {
+		BasicDataSource ds = new BasicDataSource();
+		ds.setDriverClassName(env.getProperty("admry.data.base.class"));
+		ds.setUrl(env.getProperty("admry.data.base.url"));
+		ds.setUsername(env.getProperty("admry.data.base.user"));
+		ds.setPassword(env.getProperty("admry.data.base.password"));
+		return ds;
+	}
+	
+	@Bean
+	public JdbcTemplate jdcTemplate(){
+		return new JdbcTemplate(dataSource());
+	}
+	
+}

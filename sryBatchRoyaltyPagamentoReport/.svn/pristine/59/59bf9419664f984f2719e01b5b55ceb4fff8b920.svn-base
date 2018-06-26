@@ -1,0 +1,121 @@
+package br.com.cea.model;
+
+import java.io.Serializable;
+import java.sql.Timestamp;
+import java.util.Date;
+
+public class PagamentoModel implements Serializable {
+
+	private static final long serialVersionUID = 4350832736258180961L;
+	
+	private Long id;
+	private Long numeroContrato;
+	private Date dataPagamento;
+	private Double valorConsumo;
+	private Double valorParcela;
+	private Double valorPagamento;
+	private Double valorSaldo;
+	private Timestamp dataInclusaoRegistro;
+	private Long idTabelaReport;
+	private Long numeroSequencialParcela;
+	private Long numeroSequencialGarantia;
+	private Long numeroContratoParcela;
+	
+
+	public Long getNumeroContrato() {
+		return numeroContrato;
+	}
+
+	public void setNumeroContrato(Long numeroContrato) {
+		this.numeroContrato = numeroContrato;
+	}
+
+	public Double getValorSaldo() {
+		return valorSaldo;
+	}
+
+	public void setValorSaldo(Double valorSaldo) {
+		this.valorSaldo = valorSaldo;
+	}
+
+	public Timestamp getDataInclusaoRegistro() {
+		return dataInclusaoRegistro;
+	}
+
+	public void setDataInclusaoRegistro(Timestamp dataInclusaoRegistro) {
+		this.dataInclusaoRegistro = dataInclusaoRegistro;
+	}
+
+	public Long getIdTabelaReport() {
+		return idTabelaReport;
+	}
+
+	public void setIdTabelaReport(Long idTabelaReport) {
+		this.idTabelaReport = idTabelaReport;
+	}
+
+	public Long getNumeroSequencialParcela() {
+		return numeroSequencialParcela;
+	}
+
+	public void setNumeroSequencialParcela(Long numeroSequencialParcela) {
+		this.numeroSequencialParcela = numeroSequencialParcela;
+	}
+
+	public Long getNumeroSequencialGarantia() {
+		return numeroSequencialGarantia;
+	}
+
+	public void setNumeroSequencialGarantia(Long numeroSequencialGarantia) {
+		this.numeroSequencialGarantia = numeroSequencialGarantia;
+	}
+
+	public Long getNumeroContratoParcela() {
+		return numeroContratoParcela;
+	}
+
+	public void setNumeroContratoParcela(Long numeroContratoParcela) {
+		this.numeroContratoParcela = numeroContratoParcela;
+	}
+
+	public Double getValorConsumo() {
+		return valorConsumo;
+	}
+
+	public void setValorConsumo(Double valorConsumo) {
+		this.valorConsumo = valorConsumo;
+	}
+
+	public Double getValorParcela() {
+		return valorParcela;
+	}
+
+	public void setValorParcela(Double valorParcela) {
+		this.valorParcela = valorParcela;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Date getDataPagamento() {
+		return dataPagamento;
+	}
+
+	public void setDataPagamento(Date dataPagamento) {
+		this.dataPagamento = dataPagamento;
+	}
+
+	public Double getValorPagamento() {
+		return valorPagamento;
+	}
+
+	public void setValorPagamento(Double valorPagamento) {
+		this.valorPagamento = valorPagamento;
+	}
+
+}

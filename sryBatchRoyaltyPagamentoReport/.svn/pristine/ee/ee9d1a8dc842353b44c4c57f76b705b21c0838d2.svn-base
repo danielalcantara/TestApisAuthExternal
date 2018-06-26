@@ -1,0 +1,115 @@
+package br.com.cea.dao;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
+
+import br.com.cea.model.ContratoModel;
+import br.com.cea.model.GarantiaModel;
+import br.com.cea.model.LancamentoPedidoModel;
+import br.com.cea.model.LancamentoPeriodoModel;
+import br.com.cea.model.PagamentoModel;
+import br.com.cea.model.PagamentoReport;
+import br.com.cea.model.ParcelaModel;
+import br.com.cea.model.PeriodoModel;
+
+public class PagamentoReportDAO implements IPagamentoReportDAO {
+
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
+
+	@Autowired
+	Environment env;
+
+	public void savePagamento(PagamentoModel pagamentoModel) throws Exception {
+		
+		Integer idPagamento = getIdPagamento();
+
+		jdbcTemplate.update(env.getProperty("INSERT_TABLE_PAGAMENTO"),
+			new Object[] { 
+				idPagamento,
+				pagamentoModel.getNumeroContrato(),
+				pagamentoModel.getDataPagamento(),
+			}
+		);
+		
+	}
+	
+	public Integer getIdPagamento() {
+		return jdbcTemplate.query(env.getProperty("GET_ID_PAGAMENTO"), new ResultSetExtractor<Integer>(){
+			@Override
+			public Integer extractData(ResultSet rs) throws SQLException, DataAccessException {
+				Integer result =  null;
+				if (rs.next())
+					result = rs.getInt(1);
+				return result;
+			}
+		});
+	}
+
+	@Override
+	public GarantiaModel fetchGarantia(Long idConttato) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ContratoModel fetchContrato(Long idContrato) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<PeriodoModel> fetchPeriodos(Long idGarantia) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<ParcelaModel> fetchParcelas(Long idPeriodo) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<LancamentoPedidoModel> fetchLancamentosPedidoPorConsumos() throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void saveLancamentoPedido(LancamentoPedidoModel lancamentoPedido) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void saveLancamentoPeriodo(LancamentoPeriodoModel lancamentoPeriodo) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public LancamentoPeriodoModel fetchLancamentoPeriodo(Long idContrato) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void saveReport(PagamentoReport pagamentoModel) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void updateReport(PagamentoReport pagamentoModel) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+}

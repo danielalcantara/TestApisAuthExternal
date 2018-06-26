@@ -1,0 +1,33 @@
+package br.com.cea.processar;
+
+import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import br.com.cea.bean.Contrato;
+import br.com.cea.service.ConciliacaoGrtaServices;
+
+@Component
+public class ProcessarConciliacaoGarantia {
+
+	@Autowired
+	private ConciliacaoGrtaServices concialiacaoGrtaServices;
+	
+	private static Logger logger = LogManager.getLogger();
+
+	public List<Contrato> buscarParcelasCompras() throws Exception {
+		try {
+			return concialiacaoGrtaServices.pesquisar();
+		} catch (Exception e) {
+			logger.error(e);
+			throw new Exception(e);
+		}
+	}
+	
+	public void processar() {
+		
+	}
+}

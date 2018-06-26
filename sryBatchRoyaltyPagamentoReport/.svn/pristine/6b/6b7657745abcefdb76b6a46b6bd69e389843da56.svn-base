@@ -1,0 +1,23 @@
+package br.com.cea.dao.rowmapper;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.springframework.jdbc.core.RowMapper;
+
+import br.com.cea.model.ParcelaModel;
+
+public class ParcelaModelRowMapper implements RowMapper<ParcelaModel>{
+
+	@Override
+	public ParcelaModel mapRow(ResultSet rs, int arg1) throws SQLException {
+		ParcelaModel model = new ParcelaModel();
+		model.setId(rs.getLong("NI_SEQ_PAR"));
+		model.setIdPeriodo(rs.getLong("NI_SEQ_GRT"));
+		model.setIdContrato(rs.getLong("NI_CTO_RTY"));
+		model.setDataVencimento(rs.getDate("DT_PGT_GRT"));
+		model.setValor(rs.getDouble("VL_PAR_GRT"));
+		return model;
+	}
+
+}

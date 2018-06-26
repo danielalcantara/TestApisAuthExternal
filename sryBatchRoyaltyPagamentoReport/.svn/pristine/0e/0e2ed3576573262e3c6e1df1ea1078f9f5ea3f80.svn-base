@@ -1,0 +1,25 @@
+package br.com.cea.factory;
+
+import br.com.cea.bo.IProcessarPagamentoReportBO;
+import br.com.cea.enumerator.TipoProcessarPagamentoReportEnum;
+
+public abstract class ProcessarPagamentoReportFactory {
+
+	public static IProcessarPagamentoReportBO getProcessarPagamentoReport(String tipoParcela)
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+		IProcessarPagamentoReportBO processarPagamentoReportBO = null;
+
+		if (tipoParcela == null)
+			return null;
+
+		for (TipoProcessarPagamentoReportEnum tipoCalculoValoresEnum : TipoProcessarPagamentoReportEnum.values()) {
+			if (tipoCalculoValoresEnum.tipo().equals(tipoParcela)) {
+				processarPagamentoReportBO = (IProcessarPagamentoReportBO) Class
+						.forName(tipoCalculoValoresEnum.className()).newInstance();
+			}
+		}
+
+		return processarPagamentoReportBO;
+	}
+
+}

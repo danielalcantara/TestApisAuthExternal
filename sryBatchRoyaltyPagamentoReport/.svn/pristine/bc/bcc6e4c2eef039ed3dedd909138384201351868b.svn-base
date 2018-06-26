@@ -1,0 +1,63 @@
+package br.com.cea.dao;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
+
+import br.com.cea.model.GarantiaModel;
+import br.com.cea.model.PagamentoModel;
+
+public class PagamentoReportDAO implements IPagamentoReportDAO {
+
+	private static Logger logger = LogManager.getLogger();
+
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
+
+	@Autowired
+	Environment env;
+
+	public Integer salvarPagamento(PagamentoModel pagamentoModel) throws Exception {
+		
+		Integer idPagamento = getIdPagamento();
+
+		try {
+			return jdbcTemplate.update(env.getProperty("INSERT_PAGAMENTO_QUERY"),
+				new Object[] { 
+					idPagamento,
+					pagamentoModel.getValorPagamento()
+				}
+			);
+		} catch (Exception ex) {
+			logger.error(ex);
+			throw ex;
+		}
+		
+	}
+	
+	public Integer getIdPagamento() {
+		return jdbcTemplate.query(env.getProperty("GET_ID_PAGAMENTO"), new ResultSetExtractor<Integer>(){
+			@Override
+			public Integer extractData(ResultSet rs) throws SQLException, DataAccessException {
+				Integer result =  null;
+				if (rs.next())
+					result = rs.getInt(1);
+				return result;
+			}
+		});
+	}
+
+	@Override
+	public List<GarantiaModel> buscarGarantia(Integer idConttato) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+}

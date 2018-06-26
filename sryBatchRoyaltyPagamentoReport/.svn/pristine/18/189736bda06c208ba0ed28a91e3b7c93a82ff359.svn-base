@@ -1,0 +1,64 @@
+package br.com.cea.repository.impl;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.stereotype.Component;
+
+import br.com.cea.bean.Contrato;
+
+@Component
+public class ContratosPesquisar {
+
+	private static Logger logger = LogManager.getLogger();
+	
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
+	
+	@Autowired
+	Environment env;
+	
+	public List<Contrato> getContratosAVencer(){
+		
+		logger.info("Pesquidar contratos ate 6 meses de vencer");
+		
+		return this.jdbcTemplate.query(env.getProperty("CONSULTA_CONTRATOS_A_VENCER"), new ResultSetExtractor<List<Contrato>>(){
+
+			@Override
+			public List<Contrato> extractData(ResultSet rs) throws SQLException  {
+
+				List<Contrato> lista = new ArrayList<>();
+				
+				try {
+					while (rs.next()){
+						Contrato cto = new Contrato();
+						
+						cto.setContratoId(rs.getLong("NI_CTO_RTY"));
+						cto.setDataFimVigencia(rs.getString("DT_FIM_VIG_CTO"));
+						cto.setDataIniciovigencia(rs.getString("DT_INI_VIG_CTO"));
+						cto.setDataToleranciaRecebimentoItem(rs.getString("DT_TOL_REC_ITEM"));
+						cto.setDescricaContrato(rs.getString("NO_CTO_RTY"));
+						cto.setDescricaoItem(rs.getString("NO_VLR_ATB_DEFD_USR"));
+						cto.setDiasRestantes(rs.getInt("DIAS_RESTANTE"));
+						cto.setStatusContratoAtivo(rs.getString("IN_CTO_RTY_ATV"));
+						
+						lista.add(cto);
+					}
+				} catch (SQLException e) {
+					throw new SQLException("Falha o pesquisar contratos pendentes a 6 meses de vencer "+e.getMessage());
+				}
+				
+				return lista;
+			}
+			
+		});
+	}
+}

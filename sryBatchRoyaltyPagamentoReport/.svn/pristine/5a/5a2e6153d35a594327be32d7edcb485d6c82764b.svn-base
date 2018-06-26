@@ -1,0 +1,21 @@
+package br.com.cea.factory;
+
+import br.com.cea.bo.ICalculoValoresParcelaBO;
+import br.com.cea.bo.impl.CalculoValoresParcelaTipo1BO;
+import br.com.cea.enumerator.TipoCalculoValoresEnum;
+
+public abstract class CalculoValoresFactory {
+	
+	public static ICalculoValoresParcelaBO getCalculoValores(String tipoParcela) {
+		ICalculoValoresParcelaBO calculoValoresBO = null;
+		
+		if (tipoParcela == null)
+			return null;
+		
+		if (tipoParcela == TipoCalculoValoresEnum.TIPO1.tipo())
+			return new CalculoValoresParcelaTipo1BO();
+		
+		return calculoValoresBO;
+	}
+	
+}
