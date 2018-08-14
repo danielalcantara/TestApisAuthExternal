@@ -17,7 +17,7 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 	@Override
 	public void beforeJob(JobExecution jobExecution) {
 		log.info("**** Iniciando processamento do batch... ****");
-		log.info("**** Data e hora do processamento: " + DateUtil.getCurrentDateAndHour() + " ****");
+		log.info("**** Data e hora inicialização: " + DateUtil.getCurrentDateAndHour() + " ****");
 
 		super.beforeJob(jobExecution);
 	}
@@ -37,6 +37,9 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 					log.info("**** Registros processados com erro: " + RegisterCancellationsUtil.qtdProcessErros
 							+ " ****");
 				}
+
+				log.info("**** Total de Registros processados: " + (RegisterCancellationsUtil.qtdFinalAuth
+						+ RegisterCancellationsUtil.qtdUndefinedAuth + RegisterCancellationsUtil.qtdPreAuth) + " ****");
 			} else {
 				log.info("**** Não houve registros processados!!! ****");
 			}

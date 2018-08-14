@@ -23,6 +23,9 @@ public class Transaction {
 	@Column(name = "CodigoTransacao")
 	private Long codigoTransacao;
 
+	@Column(name = "CodigoCartao")
+	private Long codigoCartao;
+
 	@Column(name = "DataAutorizacao")
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date dataAutorizacao;
@@ -45,6 +48,14 @@ public class Transaction {
 
 	public void setCodigoTransacao(Long codigoTransacao) {
 		this.codigoTransacao = codigoTransacao;
+	}
+
+	public Long getCodigoCartao() {
+		return codigoCartao;
+	}
+
+	public void setCodigoCartao(Long codigoCartao) {
+		this.codigoCartao = codigoCartao;
 	}
 
 	public Date getDataAutorizacao() {

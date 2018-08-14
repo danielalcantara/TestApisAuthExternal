@@ -21,7 +21,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
-@PropertySource(name = "persistence_config", value = "classpath:persistence_config.properties")
+@PropertySource(name = "persistence_config", value = "file:/opt/vp/app/batch-libera-saldo/config/persistence_config.properties")
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = "br.com.hubfintech.batch.liberarsaldo.repository", 
 	entityManagerFactoryRef = "emfProcessadora", transactionManagerRef = "txProcessadora")

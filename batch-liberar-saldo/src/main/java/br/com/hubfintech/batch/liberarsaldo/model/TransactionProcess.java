@@ -5,26 +5,13 @@ import java.util.Date;
 public class TransactionProcess {
 
 	private Long codigo;
+	private Long cardId;
 	private String situacao;
 	private Long codigoSituacao;
-	private Integer codigoTeste;
 	private Date dataAutorizacao;
-	
+
 	public TransactionProcess() {
 		super();
-	}
-
-	/**
-	 * @param codigo
-	 * @param situacao
-	 * @param codigoSituacao
-	 */
-	public TransactionProcess(Long codigo, String situacao, Long codigoSituacao, Date dataAutorizacao) {
-		super();
-		this.codigo = codigo;
-		this.situacao = situacao;
-		this.codigoSituacao = codigoSituacao;
-		this.dataAutorizacao = dataAutorizacao;
 	}
 
 	public Long getCodigo() {
@@ -33,6 +20,14 @@ public class TransactionProcess {
 
 	public void setCodigo(Long codigo) {
 		this.codigo = codigo;
+	}
+
+	public Long getCardId() {
+		return cardId;
+	}
+
+	public void setCardId(Long cardId) {
+		this.cardId = cardId;
 	}
 
 	public String getSituacao() {
@@ -49,14 +44,6 @@ public class TransactionProcess {
 
 	public void setCodigoSituacao(Long codigoSituacao) {
 		this.codigoSituacao = codigoSituacao;
-	}
-
-	public Integer getCodigoTeste() {
-		return codigoTeste;
-	}
-
-	public void setCodigoTeste(Integer codigoTeste) {
-		this.codigoTeste = codigoTeste;
 	}
 
 	public Date getDataAutorizacao() {
