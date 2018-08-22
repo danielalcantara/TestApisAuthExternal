@@ -8,6 +8,7 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
@@ -21,7 +22,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
-@PropertySource(name = "persistence_config", value = "file:/opt/vp/app/batch-libera-saldo/config/persistence_config.properties")
+@PropertySource(name = "persistence_config", value = "file:/opt/vp/app/batch-liberar-saldo/config/persistence_config.properties")
 @EnableTransactionManagement
 @EnableJpaRepositories(basePackages = "br.com.hubfintech.batch.liberarsaldo.repository", 
 	entityManagerFactoryRef = "emfProcessadora", transactionManagerRef = "txProcessadora")
@@ -31,6 +32,7 @@ public class DataSourceConfiguration {
 	Environment env;
 
 	@Bean(name = "emfProcessadora")
+	@Primary
 	public EntityManagerFactory entityManager() {
 		HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
 		vendorAdapter.setDatabase(Database.valueOf("SQL_SERVER"));

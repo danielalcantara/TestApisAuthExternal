@@ -11,7 +11,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.0.0.RELEASE</version>
+		<version>1.5.15.RELEASE</version>
 	</parent>
 
 	<properties>
@@ -35,11 +35,17 @@
 			<artifactId>log4j</artifactId>
 			<version>1.2.17</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.microsoft.sqlserver</groupId>
 			<artifactId>sqljdbc</artifactId>
 			<version>4.1.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.threeten</groupId>
+			<artifactId>threetenbp</artifactId>
+			<version>1.3.7</version>
 		</dependency>
 
 	</dependencies>
@@ -52,6 +58,49 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
+
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>versions-maven-plugin</artifactId>
+					<version>2.5</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
+
+	<distributionManagement>
+		<repository>
+			<id>vp-central</id>
+			<name>libs-release</name>
+			<url>http://artifactory.web.valepresente.com.br/artifactory/libs-release-local</url>
+		</repository>
+		<snapshotRepository>
+			<id>vp-snapshots</id>
+			<name>libs-snapshots</name>
+			<url>http://artifactory.web.valepresente.com.br/artifactory/libs-snapshot-local</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<repositories>
+		<!-- ValePresente MAVEN REPOSITORY -->
+		<repository>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>vp-central</id>
+			<name>libs-release</name>
+			<url>http://artifactory.web.valepresente.com.br/artifactory/libs-release</url>
+		</repository>
+		<repository>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<id>vp-snapshots</id>
+			<name>libs-snapshots</name>
+			<url>http://artifactory.web.valepresente.com.br/artifactory/libs-snapshots</url>
+		</repository>
+	</repositories>
 
 </project>

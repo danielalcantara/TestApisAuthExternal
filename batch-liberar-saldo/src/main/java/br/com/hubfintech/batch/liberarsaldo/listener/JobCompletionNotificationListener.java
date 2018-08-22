@@ -25,10 +25,10 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 	@Override
 	public void afterJob(JobExecution jobExecution) {
 		if (jobExecution.getStatus() == BatchStatus.COMPLETED) {
-			log.info("**** Job Finalizado com Sucesso!!! *****");
+			log.info("**** Batch Finalizado com Sucesso!!! *****");
 
 			if (RegisterCancellationsUtil.process > 0) {
-				log.info("**** Quantidade de registros processados: ****");
+				log.info("**** Resumo dos registros processados: ****");
 				log.info("**** Final Auth: " + RegisterCancellationsUtil.qtdFinalAuth + " ****");
 				log.info("**** Undefined Auth: " + RegisterCancellationsUtil.qtdUndefinedAuth + " ****");
 				log.info("**** Pre Auth: " + RegisterCancellationsUtil.qtdPreAuth + " ****");
@@ -45,10 +45,9 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
 			}
 
 		} else if (jobExecution.getStatus() == BatchStatus.FAILED) {
-			log.info("**** Job Finalizado com Falha, favor verificar log!!! *****");
+			log.info("**** Batch Finalizado com Falha, favor verificar log!!! *****");
 		}
 
-		log.info("**** Fim de processamento do batch:  *****");
 		log.info("**** Data e hora finalização: " + DateUtil.getCurrentDateAndHour() + " *****");
 	}
 }

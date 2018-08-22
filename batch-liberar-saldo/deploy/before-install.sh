@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-APP_NAME="mastercard-clearing"
+APP_NAME="batch-liberar-saldo"
 APP_DIR="/opt/vp/app"
 INSTALLATION_DIR="$APP_DIR/$APP_NAME"
 CURRENT_DEPLOY="$INSTALLATION_DIR/current"

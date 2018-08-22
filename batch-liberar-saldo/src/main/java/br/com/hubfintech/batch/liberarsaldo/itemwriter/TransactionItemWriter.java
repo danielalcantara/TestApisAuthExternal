@@ -16,7 +16,7 @@ public class TransactionItemWriter implements ITransactionItemWriter {
 
 	private static final Logger log = Logger.getLogger(TransactionRepository.class);
 
-	private final String MSG_ERROR_PROCESS = "Erro no cancelamento da transação: ";
+	private final String MSG_ERROR_PROCESS = "Falha no cancelamento da transação: ";
 
 	@Autowired
 	private ITransactionRepository transactionRepo;
@@ -28,7 +28,7 @@ public class TransactionItemWriter implements ITransactionItemWriter {
 			try {
 				Long codigoTransacaoRetorno = transactionRepo.cancelTransaction(transactionProcess);
 
-				if (codigoTransacaoRetorno == null) {
+				if (codigoTransacaoRetorno == null && !transactionProcess.isIncremental()) {
 					log.error(MSG_ERROR_PROCESS + transactionProcess.getCodigo());
 					RegisterCancellationsUtil.qtdProcessErros++;
 				}

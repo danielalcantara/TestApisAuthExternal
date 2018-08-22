@@ -4,12 +4,11 @@ set -x
 # variables
 SCRIPT_PATH=$(dirname $0)
 VERSION=${1:-0.0.0-1}
-APP_NAME="mastercard-clearing-service"
-PROJECT_DEPENDENCY_NAME="mastercard-clearing-service"
-DEB_NAME="$APP_NAME-valepresente"
-RPM_NAME="$APP_NAME-valepresente"
-TMP_DEB_DIR="/tmp/$APP_NAME-valepresente-VERSION_ARCH.deb"
-TMP_RPM_DIR="/tmp/$APP_NAME-valepresente-VERSION_ARCH.rpm"
+APP_NAME="batch-liberar-saldo"
+DEB_NAME="$APP_NAME-hubfintech"
+RPM_NAME="$APP_NAME-hubfintech"
+TMP_DEB_DIR="/tmp/$APP_NAME-hubfintech-VERSION_ARCH.deb"
+TMP_RPM_DIR="/tmp/$APP_NAME-hubfintech-VERSION_ARCH.rpm"
 APP_DIR="/opt/vp/app"
 INSTALLATION_DIR="$APP_DIR/$APP_NAME"
 PIDS_DIR="$APP_DIR/pids/$APP_NAME"
@@ -22,7 +21,7 @@ rsync --version >/dev/null 2>&1 || { echo >&2 "rsync is required!"; exit 1; }
 
 [[ -w $CURRENT_DEPLOY ]] || { echo >&2  "$CURRENT_DEPLOY is not writable by the user"; exit 1; }
 
-cp $SCRIPT_PATH/../$PROJECT_DEPENDENCY_NAME/target/$APP_NAME*.jar $CURRENT_DEPLOY/$APP_NAME.jar || exit 1
+cp ./target/$APP_NAME*.jar $CURRENT_DEPLOY/$APP_NAME.jar || exit 1
 
 # generating .deb file
 fpm -s dir \

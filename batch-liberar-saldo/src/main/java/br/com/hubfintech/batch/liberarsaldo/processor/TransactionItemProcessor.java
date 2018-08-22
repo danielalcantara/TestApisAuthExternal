@@ -20,6 +20,9 @@ public class TransactionItemProcessor implements ITransactionItemProcessor {
 		transactionProcess.setCodigoSituacao(2L);
 		transactionProcess.setSituacao("C");
 		transactionProcess.setDataAutorizacao(transaction.getDataAutorizacao());
+		
+		if (transaction.getCodigoTransacaoOrigem() != null)
+			transactionProcess.setIncremental(true);
 
 		if (EAuthType.FINAL_AUTH.getTypeCode().equals(transaction.getCodeAuthType()))
 			RegisterCancellationsUtil.qtdFinalAuth++;

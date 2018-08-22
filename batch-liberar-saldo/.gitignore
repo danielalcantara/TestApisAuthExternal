@@ -6,3 +6,5 @@
 target/classes/
 
 \.classpath
+
+target/

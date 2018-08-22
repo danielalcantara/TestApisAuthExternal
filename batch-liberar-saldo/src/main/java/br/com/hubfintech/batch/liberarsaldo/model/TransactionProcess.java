@@ -9,6 +9,7 @@ public class TransactionProcess {
 	private String situacao;
 	private Long codigoSituacao;
 	private Date dataAutorizacao;
+	private boolean incremental = false;
 
 	public TransactionProcess() {
 		super();
@@ -52,6 +53,14 @@ public class TransactionProcess {
 
 	public void setDataAutorizacao(Date dataAutorizacao) {
 		this.dataAutorizacao = dataAutorizacao;
+	}
+
+	public boolean isIncremental() {
+		return incremental;
+	}
+
+	public void setIncremental(boolean incremental) {
+		this.incremental = incremental;
 	}
 
 }
