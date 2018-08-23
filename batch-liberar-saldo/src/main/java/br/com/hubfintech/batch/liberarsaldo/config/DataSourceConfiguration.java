@@ -8,7 +8,6 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
@@ -32,7 +31,6 @@ public class DataSourceConfiguration {
 	Environment env;
 
 	@Bean(name = "emfProcessadora")
-	@Primary
 	public EntityManagerFactory entityManager() {
 		HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
 		vendorAdapter.setDatabase(Database.valueOf("SQL_SERVER"));
@@ -42,7 +40,7 @@ public class DataSourceConfiguration {
 		emf.setDataSource(dataSource());
 		emf.setJpaVendorAdapter(vendorAdapter);
 		emf.setPersistenceUnitName("processadora");
-		
+
 		// Classpath scanning of @Component, @Service, etc annotated class
 		emf.setPackagesToScan(env.getProperty("entitymanager.packagesToScan"));
 
@@ -58,7 +56,7 @@ public class DataSourceConfiguration {
 		return emf.getObject();
 	}
 
-	@Bean
+	@Bean(value = "dsProcessadora")
 	public DataSource dataSource() {
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
 		dataSource.setDriverClassName(env.getRequiredProperty("db.driver"));

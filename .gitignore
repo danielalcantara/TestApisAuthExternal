@@ -8,3 +8,11 @@ external-auth-test/\.settings/
 batch-liberar-saldo/\.classpath
 
 batch-liberar-saldo/\.project
+
+batch-liberar-saldo/target/classes/
+
+batch-processing-model/complete/target/classes/META-INF/maven/org\.springframework/batch-processing-model/pom\.properties
+
+batch-processing-model/complete/\.project
+
+batch-processing-model/complete/target/classes/
