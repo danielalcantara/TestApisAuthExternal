@@ -14,7 +14,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import br.com.hubfintech.batch.liberarsaldo.enums.EAuthType;
 import br.com.hubfintech.batch.liberarsaldo.model.Transaction;
 import br.com.hubfintech.batch.liberarsaldo.model.TransactionProcess;
 
@@ -36,14 +35,14 @@ public class TransactionRepository implements ITransactionRepository {
 	public List<Transaction> getTransactionFinalAuth() {
 		Query query = em.createNativeQuery("SELECT t.CodigoTransacao, t.CodigoCartao, t.DataAutorizacao, t.Situacao, "
 				+ "t.CodigoSituacao, t.CodigoTransacaoOrigem, t.AutorizadorDE48_61_5 FROM Processadora.dbo.Transacoes t "
-				+ "INNER JOIN Cartoes c ON c.CodigoCartao = t.CodigoCartao "
+				/*+ "INNER JOIN Cartoes c ON c.CodigoCartao = t.CodigoCartao "
 				+ "INNER JOIN Modalidades m ON m.CodigoModalidade = c.CodigoModalidade "
 				+ "INNER JOIN Produtos p ON p.CodigoProduto = m.CodigoProduto "
 				+ "INNER JOIN Bandeiras b ON b.CodigoBandeira = p.CodigoBandeira "
 				+ "WHERE t.CodigoSituacao = 1 AND t.AutorizadorDE48_61_5 = 1 AND dateadd(day, :days, DataAutorizacao) < GETDATE() "
-				+ "AND b.CodigoBandeira IN (:codigosBandeira)", Transaction.class);
-		query.setParameter("days", EAuthType.FINAL_AUTH.getDays());
-		query.setParameter("codigosBandeira", codigosBandeira);
+				+ "AND b.CodigoBandeira IN (:codigosBandeira)"*/, Transaction.class);
+		/*query.setParameter("days", EAuthType.FINAL_AUTH.getDays());
+		query.setParameter("codigosBandeira", codigosBandeira);*/
 
 		return query.getResultList();
 	}
@@ -53,14 +52,14 @@ public class TransactionRepository implements ITransactionRepository {
 	public List<Transaction> getTransactionUndefinedAuth() {
 		Query query = em.createNativeQuery("SELECT t.CodigoTransacao, t.CodigoCartao, t.DataAutorizacao, t.Situacao, "
 				+ "t.CodigoSituacao, t.CodigoTransacaoOrigem, t.AutorizadorDE48_61_5 FROM Processadora.dbo.Transacoes t "
-				+ "INNER JOIN Cartoes c ON c.CodigoCartao = t.CodigoCartao "
+				/*+ "INNER JOIN Cartoes c ON c.CodigoCartao = t.CodigoCartao "
 				+ "INNER JOIN Modalidades m ON m.CodigoModalidade = c.CodigoModalidade "
 				+ "INNER JOIN Produtos p ON p.CodigoProduto = m.CodigoProduto "
 				+ "INNER JOIN Bandeiras b ON b.CodigoBandeira = p.CodigoBandeira "
 				+ "WHERE t.CodigoSituacao = 1 AND t.AutorizadorDE48_61_5 = 0 AND dateadd(day, :days, DataAutorizacao) < GETDATE() "
-				+ "AND b.CodigoBandeira IN (:codigosBandeira)", Transaction.class);
-		query.setParameter("days", EAuthType.UNDEFINED_AUTH.getDays());
-		query.setParameter("codigosBandeira", codigosBandeira);
+				+ "AND b.CodigoBandeira IN (:codigosBandeira)"*/, Transaction.class);
+		/*query.setParameter("days", EAuthType.UNDEFINED_AUTH.getDays());
+		query.setParameter("codigosBandeira", codigosBandeira);*/
 
 		return query.getResultList();
 	}
@@ -70,16 +69,16 @@ public class TransactionRepository implements ITransactionRepository {
 	public List<Transaction> getTransactionPreAuth() {
 		Query query = em.createNativeQuery("SELECT t.CodigoTransacao, t.CodigoCartao, t.DataAutorizacao, t.Situacao, "
 				+ "t.CodigoSituacao, t.CodigoTransacaoOrigem, t.AutorizadorDE48_61_5 FROM Processadora.dbo.Transacoes t "
-				+ "INNER JOIN Cartoes c ON c.CodigoCartao = t.CodigoCartao "
+				/*+ "INNER JOIN Cartoes c ON c.CodigoCartao = t.CodigoCartao "
 				+ "INNER JOIN Modalidades m ON m.CodigoModalidade = c.CodigoModalidade "
 				+ "INNER JOIN Produtos p ON p.CodigoProduto = m.CodigoProduto "
 				+ "INNER JOIN Bandeiras b ON b.CodigoBandeira = p.CodigoBandeira "
 				+ "WHERE t.CodigoSituacao = 1 AND t.AutorizadorDE48_61_5 = 4 AND dateadd(day, :days, DataAutorizacao) < GETDATE() "
 				+ "AND t.CodigoTransacaoOrigem IS NULL AND (SELECT COUNT(ts.CodigoTransacao) FROM Processadora.dbo.Transacoes ts WHERE "
-				+ "ts.CodigoTransacaoOrigem = t.CodigoTransacao) = 0 AND b.CodigoBandeira IN (:codigosBandeira)",
+				+ "ts.CodigoTransacaoOrigem = t.CodigoTransacao) = 0 AND b.CodigoBandeira IN (:codigosBandeira)"*/,
 				Transaction.class);
-		query.setParameter("days", EAuthType.PRE_AUTH.getDays());
-		query.setParameter("codigosBandeira", codigosBandeira);
+		/*query.setParameter("days", EAuthType.PRE_AUTH.getDays());
+		query.setParameter("codigosBandeira", codigosBandeira);*/
 
 		return query.getResultList();
 	}
@@ -89,15 +88,15 @@ public class TransactionRepository implements ITransactionRepository {
 	public List<Transaction> getTransactionPreAuthWithIncremental() {
 		Query query = em.createNativeQuery("SELECT t.CodigoTransacao, t.CodigoCartao, t.DataAutorizacao, t.Situacao, "
 				+ "t.CodigoSituacao, t.CodigoTransacaoOrigem, t.AutorizadorDE48_61_5 FROM Processadora.dbo.Transacoes t "
-				+ "INNER JOIN Cartoes c ON c.CodigoCartao = t.CodigoCartao "
+				/*+ "INNER JOIN Cartoes c ON c.CodigoCartao = t.CodigoCartao "
 				+ "INNER JOIN Modalidades m ON m.CodigoModalidade = c.CodigoModalidade "
 				+ "INNER JOIN Produtos p ON p.CodigoProduto = m.CodigoProduto "
 				+ "INNER JOIN Bandeiras b ON b.CodigoBandeira = p.CodigoBandeira "
 				+ "WHERE t.CodigoSituacao = 1 AND t.AutorizadorDE48_61_5 = 4 AND dateadd(day, :days, DataAutorizacao) < GETDATE() "
-				+ "AND t.CodigoTransacaoOrigem IS NOT NULL AND b.CodigoBandeira IN (:codigosBandeira) "
+				+ "AND t.CodigoTransacaoOrigem IS NOT NULL AND b.CodigoBandeira IN (:codigosBandeira) "*/
 				+ "ORDER BY t.CodigoTransacaoOrigem, t.CodigoTransacao ", Transaction.class);
-		query.setParameter("days", EAuthType.PRE_AUTH.getDays());
-		query.setParameter("codigosBandeira", codigosBandeira);
+		/*query.setParameter("days", EAuthType.PRE_AUTH.getDays());
+		query.setParameter("codigosBandeira", codigosBandeira);*/
 
 		return query.getResultList();
 	}
