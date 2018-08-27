@@ -3,7 +3,6 @@ package br.com.hubfintech.batch.liberarsaldo.config;
 import java.util.Properties;
 
 import javax.persistence.EntityManagerFactory;
-import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -35,9 +34,15 @@ public class DataSourceConfiguration {
 		HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
 		vendorAdapter.setDatabase(Database.valueOf("SQL_SERVER"));
 		vendorAdapter.setDatabasePlatform("org.hibernate.dialect.SQLServer2008Dialect");
+		
+		DriverManagerDataSource dataSource = new DriverManagerDataSource();
+		dataSource.setDriverClassName(env.getRequiredProperty("db.driver"));
+		dataSource.setUrl(env.getRequiredProperty("db.url"));
+		dataSource.setUsername(env.getRequiredProperty("db.username"));
+		dataSource.setPassword(env.getRequiredProperty("db.password"));
 
 		LocalContainerEntityManagerFactoryBean emf = new LocalContainerEntityManagerFactoryBean();
-		emf.setDataSource(dataSource());
+		emf.setDataSource(dataSource);
 		emf.setJpaVendorAdapter(vendorAdapter);
 		emf.setPersistenceUnitName("processadora");
 
@@ -56,7 +61,7 @@ public class DataSourceConfiguration {
 		return emf.getObject();
 	}
 
-	@Bean(value = "dsProcessadora")
+	/*@Bean(value = "dsProcessadora")
 	public DataSource dataSource() {
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
 		dataSource.setDriverClassName(env.getRequiredProperty("db.driver"));
@@ -64,7 +69,7 @@ public class DataSourceConfiguration {
 		dataSource.setUsername(env.getRequiredProperty("db.username"));
 		dataSource.setPassword(env.getRequiredProperty("db.password"));
 		return dataSource;
-	}
+	}*/
 
 	@Bean(name = "txProcessadora")
 	public PlatformTransactionManager transactionManager() {
