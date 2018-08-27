@@ -1,4 +1,4 @@
-package br.com.hubfintech.batch.liberarsaldo.config;
+package com.batchmodel;
 
 import java.util.Properties;
 
@@ -55,7 +55,7 @@ public class DataSourceConfiguration {
 		return emf.getObject();
 	}
 
-	@Bean(value = "dsProcessadora")
+	@Bean(value = "dsSpringbatch")
 	public DataSource dataSource() {
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
 		dataSource.setDriverClassName(env.getRequiredProperty("db.driver"));

@@ -15,11 +15,14 @@ import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
 @Configuration
+@EnableAutoConfiguration
 @EnableBatchProcessing
 public class BatchConfiguration {
 
@@ -46,7 +49,7 @@ public class BatchConfiguration {
 	}
 
 	@Bean
-	public JdbcBatchItemWriter<Person> writer(DataSource dataSource) {
+	public JdbcBatchItemWriter<Person> writer(@Qualifier(value = "dsSpringbatch") DataSource dataSource) {
 		return new JdbcBatchItemWriterBuilder<Person>()
 				.itemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>())
 				.sql("INSERT INTO people (first_name, last_name) VALUES (:firstName, :lastName)").dataSource(dataSource)
