@@ -20,7 +20,7 @@ import br.com.hubfintech.batch.liberarsaldo.model.TransactionProcess;
 @Repository
 public class TransactionRepository implements ITransactionRepository {
 
-	@PersistenceContext
+	@PersistenceContext(unitName = "processadora")
 	private EntityManager em;
 
 	private String codigosBandeira;

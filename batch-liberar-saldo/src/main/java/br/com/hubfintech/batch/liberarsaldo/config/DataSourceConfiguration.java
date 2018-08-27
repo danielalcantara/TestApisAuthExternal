@@ -27,7 +27,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class DataSourceConfiguration {
 
 	@Autowired
-	Environment env;
+	private Environment env;
 
 	@Bean(name = "emfProcessadora")
 	public EntityManagerFactory entityManager() {

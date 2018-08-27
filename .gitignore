@@ -16,3 +16,7 @@ batch-processing-model/complete/target/classes/META-INF/maven/org\.springframewo
 batch-processing-model/complete/\.project
 
 batch-processing-model/complete/target/classes/
+
+batch-processing-model/complete/target/maven-archiver/pom\.properties
+
+batch-processing-model/complete/target/

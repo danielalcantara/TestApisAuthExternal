@@ -6,12 +6,14 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -63,6 +65,11 @@ public class DataSourceConfiguration {
 		dataSource.setUsername(env.getRequiredProperty("db.username"));
 		dataSource.setPassword(env.getRequiredProperty("db.password"));
 		return dataSource;
+	}
+
+	@Bean
+	public JdbcTemplate jdbcTemplate(@Qualifier(value = "dsSpringbatch") DataSource dataSource) {
+		return new JdbcTemplate(dataSource);
 	}
 
 	@Bean(name = "txProcessadora")
