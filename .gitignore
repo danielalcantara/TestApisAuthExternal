@@ -20,3 +20,5 @@ batch-processing-model/complete/target/classes/
 batch-processing-model/complete/target/maven-archiver/pom\.properties
 
 batch-processing-model/complete/target/
+
+batch-processing-model/complete/\.settings/
